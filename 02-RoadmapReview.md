@@ -87,6 +87,7 @@ Use the section headers above. Be direct. Skip preamble.
 2. Run in Cursor with GPT-4 → `gpt4_feedback.md`
 3. Run in Cursor with Grok → `grok_feedback.md`
 4. Run in Cursor with Gemini → `gemini_feedback.md`
+5. Run in Cursor with Composer1 → `composer1_feedback.md`
 
 The diverse perspectives will be consolidated in the next step.
 
