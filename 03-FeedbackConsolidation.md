@@ -1,10 +1,33 @@
-# Feedback Consolidation Prompt
+# 03: Feedback Consolidation
+
+> **Position:** Step 3 | After: 02-RoadmapReview (multiple runs) | Before: 04-V1Scoping or 05-RoadmapCreation
+> **Requires:** 2+ feedback files from different AI tools
+> **Produces:** Single consolidated feedback document with consensus highlighted
+
+---
+
+## Variables
+
+Replace these before using:
+- `[PROJECT_NAME]` - Your project name
+- `[FEEDBACK_FILES]` - List of feedback files (e.g., "claude_feedback.md, grok_feedback.md, gemini_feedback.md")
+- `[OUTPUT_FILE]` - Where to save consolidated feedback (default: `consolidated_feedback.md`)
+
+---
+
+## Role
 
 **Role:** You are a product strategist consolidating feedback from multiple AI tools that reviewed the same product roadmap.
 
-**Context:** I ran a roadmap review prompt through several different AI tools (Claude, Codex, etc.). Each produced a `[toolname]_feedback.md` file. I need these consolidated into a single, comprehensive document that preserves all insights while highlighting where tools agreed.
+**Context:** I ran the roadmap review prompt (02-RoadmapReview.md) through several different AI tools and saved their outputs. I need these consolidated into a single, comprehensive document that preserves all insights while highlighting where tools agreed.
 
-**Your task:** Review all feedback files and produce a consolidated `consolidated_feedback.md` that I can use to update the original roadmap.
+**Feedback files:** `[FEEDBACK_FILES]`
+
+---
+
+## Your Task
+
+Review all feedback and produce a consolidated `[OUTPUT_FILE]` that I can use to update the original spec.
 
 ---
 
@@ -12,17 +35,18 @@
 
 1. **Nothing gets cut.** Every piece of feedback from every tool must appear somewhere in the output. This is a consolidation, not a summary.
 2. **Preserve the original structure.** Use the same 5 sections from the feedback files.
-3. **Attribute sources.** Tag each point with which tool(s) raised it (e.g., `[Claude]`, `[Codex]`, `[Claude, Codex]`).
+3. **Attribute sources.** Tag each point with which tool(s) raised it (e.g., `[Claude]`, `[Grok]`, `[Claude, Grok]`).
 4. **Flag consensus.** When 2+ tools raised the same issue or idea (even if worded differently), mark it with a `🔺 CONSENSUS` tag. These are high-signal items.
 5. **Keep it actionable.** Each point should be something I can act on or decide about. If a tool was vague, note that rather than dropping it.
 
 ---
 
-## Output Structure
+## Output Format
 
 ```markdown
 # Consolidated Roadmap Feedback
 
+**Project:** [PROJECT_NAME]
 **Sources reviewed:** [list each feedback file]
 **Date consolidated:** [date]
 
@@ -121,10 +145,29 @@ If any feedback didn't fit cleanly into the structure above, capture it here by 
 
 ## Process Notes
 
-- When identifying consensus, look for semantic overlap, not just identical wording. "Needs better error handling" and "Failure states are undefined" are the same concern.
-- If tools contradict each other, include both positions and tag as `⚠️ DIVERGENT` — I'll make the call.
-- Prioritize clarity over brevity. I'll be using this to rewrite the roadmap.
+- When identifying consensus, look for **semantic overlap**, not just identical wording. "Needs better error handling" and "Failure states are undefined" are the same concern.
+- If tools contradict each other, include both positions and tag as `⚠️ DIVERGENT` — you'll make the call.
+- Prioritize clarity over brevity. You'll be using this to update the spec.
 
 ---
 
-**Output:** Save as `consolidated_feedback.md` in the repo root.
+## Verification
+
+Before marking this step complete:
+- [ ] All feedback from all tools is captured
+- [ ] Consensus items are tagged with 🔺
+- [ ] Divergent opinions are tagged with ⚠️
+- [ ] Consensus Summary section is populated
+- [ ] No feedback was lost in consolidation
+
+---
+
+## Next Step
+
+After consolidation, decide:
+- **Scope creeping?** → Proceed to **[04-V1Scoping.md](04-V1Scoping.md)** to refocus
+- **Scope is fine?** → Proceed to **[05-RoadmapCreation.md](05-RoadmapCreation.md)** to create actionable roadmap
+
+---
+
+*Template version 1.0 | Part of the Workflow Documentation System*

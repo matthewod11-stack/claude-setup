@@ -1,5 +1,6 @@
-# Long-Running Agent Workflow Template
+# 09: Long-Running Agent Workflow
 
+> **Position:** Session Management Layer | Used with: 07-RalphLoop, 08-ParallelBuild
 > **Purpose:** Template for setting up multi-session Claude Code projects that maintain continuity across context windows.
 > **Based on:** [Anthropic: Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 > **Created:** 2025-11-27
@@ -648,5 +649,12 @@ When starting a new long-running project:
 
 ---
 
-**Template Version:** 1.0
-**Source:** Created from HRSkills Desktop App implementation workflow
+## Related Documents
+
+- [07-RalphLoop.md](07-RalphLoop.md) — Autonomous execution within sessions
+- [08-ParallelBuild.md](08-ParallelBuild.md) — Multi-agent parallel development
+- [00-WorkflowIndex.md](00-WorkflowIndex.md) — Master workflow navigation
+
+---
+
+*Template version 1.0 | Part of the Workflow Documentation System*
