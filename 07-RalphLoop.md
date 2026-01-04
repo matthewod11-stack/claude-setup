@@ -1,9 +1,9 @@
 # 07: Ralph Loop (Autonomous Execution)
 
-> **Position:** Step 7 (execution) | After: 06-ExecutionSetup | Parallel to: 08-ParallelBuild
+> **Position:** Step 7 (execution) | After: 06-ExecutionSetup | Works with: 08-ParallelBuild
 > **Requires:** ROADMAP.md + SESSION_STATE.md + PLANS/ directory
 > **Produces:** Completed code, feature by feature
-> **Best For:** Sequential features, test-driven workflows, hands-off execution
+> **Best For:** Both sequential and parallel execution — ralph loops run inside each agent
 
 ---
 
@@ -24,6 +24,8 @@ You are operating in an autonomous development loop. Follow this protocol exactl
 
 **Current phase:** `[PHASE_NAME]`
 **Focus:** `[PHASE_FOCUS]`
+
+**Core principle:** Ralph Loop is the execution engine. The question isn't "Ralph Loop OR Parallel Build" — it's whether you run 1 ralph loop (sequential) or 2+ ralph loops (parallel).
 
 ---
 
@@ -116,9 +118,13 @@ Before outputting your completion promise, update SESSION_STATE.md:
 
 ## Plugin Integration
 
+### Known Issue: Skill Command Workaround
+
+The `/ralph-loop` skill command may fail with a newline security error. Use the direct script instead:
+
 **Starting the loop:**
-```
-/ralph-loop "[PHASE_FOCUS]" --completion-promise "[COMPLETION_PROMISE]" --max-iterations [MAX_ITERATIONS]
+```bash
+/Users/mattod/.claude/plugins/marketplaces/claude-plugins-official/plugins/ralph-wiggum/scripts/setup-ralph-loop.sh "[PHASE_FOCUS]" --completion-promise "[COMPLETION_PROMISE]" --max-iterations [MAX_ITERATIONS]
 ```
 
 **During execution:**
@@ -129,6 +135,76 @@ Before outputting your completion promise, update SESSION_STATE.md:
 ```
 /cancel-ralph
 ```
+Or manually delete the state file:
+```bash
+rm .claude/ralph-loop.local.md
+```
+
+### Monitoring the Loop
+
+```bash
+# Check loop state
+head -10 .claude/ralph-loop.local.md
+
+# Check current iteration
+grep '^iteration:' .claude/ralph-loop.local.md
+
+# View git progress
+git log --oneline -10
+```
+
+---
+
+## Running Parallel Ralph Loops
+
+When your roadmap indicates parallelizable work, run multiple ralph loops simultaneously. Each agent gets its own terminal/session.
+
+### Agent Prompt Template
+
+```
+You are Agent [A/B] for [PROJECT_NAME].
+
+PHASE: [PHASE_NAME]
+FOCUS: [AGENT_SPECIFIC_FOCUS]
+
+YOUR BOUNDARY (you own these):
+├── /app/[domain]/           # Routes
+├── /lib/services/[domain]/  # Service implementation
+├── /components/[domain]/    # Domain components
+└── /lib/[domain-utils]/     # Domain utilities
+
+SHARED (read-only - do NOT modify):
+├── /types/                  # Type definitions
+├── /contracts/              # Service interfaces
+├── /components/ui/          # Base components
+└── /lib/[database]/         # Database client
+
+YOUR TASKS:
+[list from ROADMAP.md for this agent]
+
+Read SESSION_STATE.md and ROADMAP.md, then begin. Create a plan in PLANS/ before
+implementing each task. Update SESSION_STATE.md after completing each task.
+Commit frequently with [Agent A/B] suffix.
+
+Start the Ralph loop by running:
+/Users/mattod/.claude/plugins/marketplaces/claude-plugins-official/plugins/ralph-wiggum/scripts/setup-ralph-loop.sh "[FOCUS]" --completion-promise "AGENT_[A/B]_COMPLETE" --max-iterations 50
+```
+
+### Parallel Agent Coordination
+
+**State file conflict:** Both agents share `.claude/ralph-loop.local.md`. Options:
+- Start agents ~30 seconds apart
+- Use git worktrees for true isolation
+- In practice, each agent manages their own loop state file
+
+**Commit convention:**
+- Agent A: `feat(domain-a): description [Agent A]`
+- Agent B: `feat(domain-b): description [Agent B]`
+
+**Context management:**
+- Enable auto-compact for long-running loops
+- Agents update SESSION_STATE.md frequently
+- If context runs out, restart and resume from docs
 
 ---
 

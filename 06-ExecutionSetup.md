@@ -1,8 +1,9 @@
-# 06: Execution Setup
+# 06: Execution Setup (Ready to Run)
 
-> **Position:** Step 6 | After: 05-RoadmapCreation | Before: 07/08 (execution)
-> **Requires:** Completed roadmap (ROADMAP.md)
-> **Produces:** Execution strategy recommendation + scaffolded session infrastructure
+> **Position:** Step 6 | After: 05-RoadmapCreation | Before: Running ralph loops
+> **Requires:** Completed roadmap with execution mode (ROADMAP.md)
+> **Produces:** Fully scaffolded session infrastructure — ready to run ralph loops
+> **Exit State:** You can start ralph loops immediately after this step
 
 ---
 
@@ -11,177 +12,66 @@
 Replace these before using:
 - `[PROJECT_NAME]` - Your project name
 - `[ROADMAP_FILE]` - Path to your roadmap
-- `[TIMELINE]` - Estimated build duration
 
 ---
 
 ## Role
 
-**Role:** You are a technical lead helping select the optimal build strategy and scaffolding the necessary session management infrastructure.
+**Role:** You are scaffolding session management infrastructure so the project is ready for autonomous execution.
 
 **Context:**
 - Project: `[PROJECT_NAME]`
 - Roadmap: `[ROADMAP_FILE]`
-- Timeline: `[TIMELINE]`
 
 ---
 
-## Your Task
+## Part 1: Read Execution Mode from Roadmap
 
-1. Evaluate project characteristics using the decision tree
-2. Recommend an execution strategy
-3. Scaffold the required infrastructure files
-4. Prepare the first task for execution
+Your roadmap (from Step 05) already contains the execution mode. Check the header:
 
----
-
-## Part 1: Strategy Decision Tree
-
-Answer these questions about `[PROJECT_NAME]`:
-
-### Q1: Timeline Pressure
-
-How tight is the deadline?
-
-- **A) Aggressive** — Need maximum velocity, willing to accept coordination overhead
-- **B) Comfortable** — Quality over speed, can work sequentially
-- **C) Fixed but realistic** — Deadline exists but scope fits
-
-### Q2: Feature Independence
-
-How separable are the features in your roadmap?
-
-- **A) Highly dependent** — Features chain together, must be sequential
-- **B) Partially independent** — Some features can be built in parallel
-- **C) Mostly independent** — Clear boundaries between feature domains
-
-### Q3: Risk Tolerance
-
-How much can break during development?
-
-- **A) Low tolerance** — Need frequent human checkpoints, review each feature
-- **B) Medium tolerance** — Can tolerate minor issues, review at phase boundaries
-- **C) High tolerance** — Prototype mode, fix issues at the end
-
-### Q4: Verification Capability
-
-How will you verify work is correct?
-
-- **A) Comprehensive test suite** — Can run automated tests after each change
-- **B) Manual verification** — Need to manually check each feature
-- **C) Mixed** — Some automated, some manual verification
-
-### Q5: Codebase State
-
-What's the starting point?
-
-- **A) Greenfield** — Starting from scratch
-- **B) Small existing** — Some code exists, patterns established
-- **C) Large existing** — Significant codebase with conventions
-
----
-
-## Part 2: Strategy Recommendations
-
-### Ralph Loop — [07-RalphLoop.md](07-RalphLoop.md)
-
-**Choose when:**
-- Features are sequential (Q2 = A)
-- Have test suite or clear verification (Q4 = A or C)
-- Comfortable timeline (Q1 = B or C)
-- Want hands-off autonomous execution
-
-**How it works:**
-- Single agent works through roadmap tasks sequentially
-- Plan → Execute → Verify loop for each task
-- Commits after each completed task
-- Natural pause points at phase boundaries
-
-**Best for:**
-- Well-defined features with clear acceptance criteria
-- Test-driven development workflows
-- Overnight or background execution runs
-
-**Plugin:** `/ralph-loop`
-
----
-
-### Parallel Build — [08-ParallelBuild.md](08-ParallelBuild.md)
-
-**Choose when:**
-- Features can parallelize (Q2 = B or C)
-- Tight deadline (Q1 = A)
-- Clear boundaries between components
-- Can manage coordination overhead
-
-**How it works:**
-- Multiple agents work on different feature domains
-- Each agent owns specific directories/files
-- Daily sync points to catch integration issues
-- Merge coordination at phase boundaries
-
-**Best for:**
-- Larger projects with separable domains
-- Compressed timelines where parallelism pays off
-- Teams (or multi-agent setups) with clear ownership
-
-**Pattern:**
+```markdown
+> **Execution Mode:** PARALLEL-READY | Agents: 2
+> **Agent A Domain:** [domain-a]
+> **Agent B Domain:** [domain-b]
 ```
-Phase 0: Sequential (Foundation)    — 1 agent
-Phase 1-N: Parallel (Features)      — 2+ agents
-Final: Sequential (Integration)     — 1 agent
+or
+```markdown
+> **Execution Mode:** SEQUENTIAL
 ```
 
----
+### The Simple Rule
 
-### Hybrid Approach
-
-**Choose when:**
-- Foundation needs sequential work, then features can parallelize
-- Some features are independent, others chain
-- Want flexibility to adjust during execution
-
-**Pattern:**
-1. Start with Ralph Loop for Foundation (Phase 0)
-2. Switch to Parallel Build for Core Features
-3. Return to Ralph Loop for Integration/Polish
-
-**Implementation:**
-- Scaffold for Long-Running Workflow (session management)
-- Define agent boundaries for parallel phases
-- Use Ralph Loop within each agent's work
+| Roadmap Says | You Do |
+|--------------|--------|
+| `PARALLEL-READY` | Parallel ralph loops (one per agent) |
+| `SEQUENTIAL` | Single ralph loop |
 
 ---
 
-## Decision Matrix
+## Part 2: Scaffold Session Infrastructure
 
-| Q1 | Q2 | Q3 | Q4 | Q5 | Recommendation |
-|----|----|----|----|----|----------------|
-| B/C | A | Any | A | Any | **Ralph Loop** |
-| A | B/C | B/C | A/C | Any | **Parallel Build** |
-| Any | Mixed | A | B | Any | **Hybrid** (Ralph + checkpoints) |
-| A | A | C | A | A | **Ralph Loop** (speed from tests) |
+Create ALL of these files. This is the complete session management setup.
 
-**When in doubt:** Start with Ralph Loop. It's simpler to manage and you can always parallelize later if bottlenecked.
+### Directory Structure
 
----
+```bash
+mkdir -p docs PLANS scripts
+```
 
-## Part 3: Infrastructure Scaffolding
+### 1. docs/PROGRESS.md
 
-Based on your selected strategy, create these artifacts:
-
-### For All Strategies (Long-Running Foundation)
-
-Create in project root:
-
-**1. SESSION_STATE.md** (or docs/PROGRESS.md)
 ```markdown
 # [PROJECT_NAME] — Session Progress Log
 
-> **Purpose:** Track progress across sessions.
-> **How to Use:** Add new session entries at TOP.
+> **Purpose:** Track progress across multiple sessions. Each session adds an entry.
+> **How to Use:** Add a new "## Session YYYY-MM-DD" section at the TOP after each work session.
 
 ---
+
+<!--
+=== ADD NEW SESSIONS AT THE TOP ===
+Most recent session should be first.
+-->
 
 ## Session [DATE] (Setup)
 
@@ -189,63 +79,226 @@ Create in project root:
 **Focus:** Infrastructure scaffolding
 
 ### Completed
-- [x] Created session management files
-- [x] Selected execution strategy: [STRATEGY]
+- [x] Set up session tracking infrastructure
+- [x] Created PROGRESS.md, features.json, KNOWN_ISSUES.md
+- [x] Created dev-init.sh script
+
+### Verified
+- [x] All documentation files created
+- [x] Dev init script works
 
 ### Next Session Should
 - Start with: Phase 0, Task 1
 - Be aware of: [Any context]
 
 ---
+
+## Pre-Implementation State
+
+**Repository State Before Work:**
+- [Describe current state]
+
+**Key Files That Exist:**
+- [List existing relevant files]
+
+---
+
+<!-- Template for future sessions:
+
+## Session YYYY-MM-DD
+
+**Phase:** X.Y
+**Focus:** [One sentence describing the session goal]
+
+### Completed
+- [x] Task 1 description
+- [x] Task 2 description
+
+### Verified
+- [ ] Tests pass
+- [ ] Type check passes
+
+### Notes
+[Any important context for future sessions]
+
+### Next Session Should
+- Start with: [specific task]
+- Be aware of: [any gotchas]
+
+-->
 ```
 
-**2. features.json**
+### 2. features.json
+
 ```json
 {
+  "$schema": "./features.schema.json",
   "_meta": {
-    "project": "[PROJECT_NAME]",
+    "description": "Feature tracking. Status: not-started | in-progress | pass | fail | blocked",
     "lastUpdated": "[DATE]",
-    "strategy": "[ralph-loop|parallel-build|hybrid]"
+    "project": "[PROJECT_NAME]",
+    "executionMode": "[sequential|parallel]"
   },
   "phase-0": {
-    "task-1": { "status": "not-started", "notes": "" }
+    "task-1": { "status": "not-started", "notes": "" },
+    "task-2": { "status": "not-started", "notes": "" }
+  },
+  "phase-1": {
+    "feature-1": { "status": "not-started", "notes": "" },
+    "feature-2": { "status": "not-started", "notes": "" }
   }
 }
 ```
 
-**3. PLANS/** directory
+### 3. docs/KNOWN_ISSUES.md
+
+```markdown
+# [PROJECT_NAME] — Known Issues & Parking Lot
+
+> **Purpose:** Track issues, blockers, and deferred decisions.
+
+---
+
+## How to Use
+
+**Add issues here when:**
+- You encounter a bug that isn't blocking current work
+- You discover something that needs investigation later
+- A decision needs to be made but can wait
+
+**Format:**
 ```
+### [PHASE-X] Brief description
+**Status:** Open | Resolved | Deferred
+**Severity:** Blocker | High | Medium | Low
+**Discovered:** YYYY-MM-DD
+**Description:** What happened
+**Workaround:** (if any)
+```
+
+---
+
+## Open Issues
+
+*(Add issues here)*
+
+---
+
+## Resolved Issues
+
+*(Move issues here when resolved)*
+
+---
+
+## Deferred Decisions
+
+*(Decisions that can wait until later)*
+```
+
+### 4. scripts/dev-init.sh
+
+```bash
+#!/bin/bash
+# Session Initialization Script
+# Run at the start of each development session
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+echo -e "${BLUE}=== [PROJECT_NAME] Session Init ===${NC}"
+echo ""
+
+# 1. Check required files
+echo -e "${BLUE}Checking files...${NC}"
+
+REQUIRED_FILES=(
+    "docs/PROGRESS.md"
+    "docs/KNOWN_ISSUES.md"
+    "features.json"
+    "ROADMAP.md"
+)
+
+for file in "${REQUIRED_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        echo -e "${GREEN}✓${NC} $file"
+    else
+        echo -e "${RED}✗ MISSING: $file${NC}"
+    fi
+done
+
+# 2. Install dependencies if needed
+if [ -d "node_modules" ]; then
+    echo -e "${GREEN}✓${NC} node_modules exists"
+else
+    echo -e "${YELLOW}Installing dependencies...${NC}"
+    npm install
+fi
+
+# 3. Run verification
+echo ""
+echo -e "${BLUE}Running verification...${NC}"
+
+if npm run typecheck > /dev/null 2>&1; then
+    echo -e "${GREEN}✓${NC} Type check passes"
+else
+    echo -e "${YELLOW}⚠${NC} Type check failed or not configured"
+fi
+
+# 4. Show progress
+echo ""
+echo -e "${BLUE}=== Recent Progress ===${NC}"
+if [ -f "docs/PROGRESS.md" ]; then
+    awk '/^## Session/{if(found)exit; found=1} found' docs/PROGRESS.md | head -20
+fi
+
+# 5. Show feature status
+echo ""
+echo -e "${BLUE}=== Feature Status ===${NC}"
+if [ -f "features.json" ]; then
+    PASS=$(grep -c '"status": "pass"' features.json 2>/dev/null || echo "0")
+    FAIL=$(grep -c '"status": "fail"' features.json 2>/dev/null || echo "0")
+    IN_PROGRESS=$(grep -c '"status": "in-progress"' features.json 2>/dev/null || echo "0")
+    echo -e "${GREEN}Pass:${NC} $PASS | ${RED}Fail:${NC} $FAIL | ${YELLOW}In Progress:${NC} $IN_PROGRESS"
+fi
+
+# 6. Show next tasks
+echo ""
+echo -e "${BLUE}=== Next Tasks ===${NC}"
+if [ -f "ROADMAP.md" ]; then
+    grep -n "\[ \]" ROADMAP.md | head -5
+fi
+
+echo ""
+echo -e "${GREEN}=== Ready ===${NC}"
+```
+
+Make it executable:
+```bash
+chmod +x scripts/dev-init.sh
+```
+
+### 5. PLANS/ Directory
+
+```bash
 mkdir -p PLANS
 ```
 
-**4. scripts/dev-init.sh**
-```bash
-#!/bin/bash
-# Session initialization - run at start of each session
-echo "=== [PROJECT_NAME] Session Init ==="
-echo ""
-echo "Recent Progress:"
-head -30 SESSION_STATE.md 2>/dev/null || head -30 docs/PROGRESS.md
-echo ""
-echo "Next Tasks:"
-grep -n "\[ \]" ROADMAP.md | head -5
-echo ""
-echo "=== Ready ==="
-```
+This is where task plans go before implementation.
 
-### Additional for Ralph Loop
+---
 
-Configure Ralph Loop parameters:
-```
-Completion Promise: PHASE_COMPLETE
-Max Iterations: 50 (adjust based on phase size)
-```
+## Part 3: Parallel-Specific Setup (if applicable)
 
-### Additional for Parallel Build
+**Skip this if your roadmap says `SEQUENTIAL`.**
 
-**1. Define Agent Boundaries**
+### Agent Boundaries (add to ROADMAP.md or separate file)
 
-In ROADMAP.md or separate file:
 ```markdown
 ## Agent Boundaries
 
@@ -259,84 +312,113 @@ In ROADMAP.md or separate file:
 - /lib/services/[domain-b]/
 - /components/[domain-b]/
 
-### Shared (Read-Only):
+### Shared (Read-Only for both):
 - /types/
-- /lib/utils/
+- /contracts/
 - /components/ui/
+- /lib/[database]/
 ```
 
-**2. Integration Points**
-Document where agents must coordinate:
-```markdown
-## Integration Points
+### Commit Convention
 
-| Point | Agent A Provides | Agent B Consumes |
-|-------|------------------|------------------|
-| [Name] | [Interface/Data] | [How used] |
+- Agent A: `feat(domain-a): description [Agent A]`
+- Agent B: `feat(domain-b): description [Agent B]`
+
+---
+
+## Part 4: Session Management Quick Reference
+
+Paste this into your ROADMAP.md or keep handy:
+
+```
+╔═══════════════════════════════════════════════════════════════════════╗
+║  SESSION MANAGEMENT - QUICK REFERENCE                                 ║
+╠═══════════════════════════════════════════════════════════════════════╣
+║                                                                       ║
+║  SESSION START:                                                       ║
+║    ./scripts/dev-init.sh                                              ║
+║                                                                       ║
+║  DURING SESSION:                                                      ║
+║    • Work on ONE task at a time                                       ║
+║    • Update docs after each completed task                            ║
+║    • Commit frequently                                                ║
+║                                                                       ║
+║  CHECKPOINT (context getting long):                                   ║
+║    "Update PROGRESS.md and features.json with current state"          ║
+║                                                                       ║
+║  SESSION END (before compaction):                                     ║
+║    1. Run verification (tests, typecheck)                             ║
+║    2. Add session entry to TOP of docs/PROGRESS.md                    ║
+║    3. Update features.json status                                     ║
+║    4. Check off tasks in ROADMAP.md                                   ║
+║    5. Commit with descriptive message                                 ║
+║                                                                       ║
+║  IF BLOCKED:                                                          ║
+║    Add to KNOWN_ISSUES.md → Move to next task                         ║
+║                                                                       ║
+╚═══════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## Part 4: First Task Preparation
+## Part 5: Commit Infrastructure
 
-Before ending this setup step:
+```bash
+git add docs/ PLANS/ scripts/ features.json ROADMAP.md
+git commit -m "chore: scaffold session management infrastructure
 
-1. **Identify first task** from Phase 0 of roadmap
-2. **Mark it as in_progress** in features.json
-3. **Create initial plan file** in PLANS/:
-   ```markdown
-   # Plan: [Task Name]
-
-   ## Objective
-   [One sentence]
-
-   ## Files to Create/Modify
-   - [file1]
-   - [file2]
-
-   ## Steps
-   1. [Step]
-   2. [Step]
-
-   ## Verification
-   - [ ] [How to verify]
-   ```
+- Add docs/PROGRESS.md for session tracking
+- Add docs/KNOWN_ISSUES.md for parking lot
+- Add features.json for pass/fail tracking
+- Add scripts/dev-init.sh for session init
+- Add PLANS/ directory for task plans"
+```
 
 ---
 
-## Plugin Integration
+## Exit Checklist
 
-During execution setup:
-- `/commit` — Commit scaffolded infrastructure files
-- `/ralph-loop` — Start autonomous loop (if Ralph Loop selected)
+Before proceeding, verify:
 
-After setup:
-- Use `/feature-dev` to break down first feature if needed
-
----
-
-## Verification
-
-Before proceeding to execution:
-- [ ] Strategy selected and documented
-- [ ] SESSION_STATE.md (or PROGRESS.md) created
-- [ ] features.json created with all tasks
-- [ ] PLANS/ directory exists
-- [ ] dev-init.sh created and executable
-- [ ] First task identified and plan created
+- [ ] `docs/PROGRESS.md` exists with initial session entry
+- [ ] `docs/KNOWN_ISSUES.md` exists
+- [ ] `features.json` exists with all tasks from roadmap
+- [ ] `scripts/dev-init.sh` exists and is executable
+- [ ] `PLANS/` directory exists
 - [ ] Infrastructure committed to git
+- [ ] Execution mode confirmed from roadmap header
 
 ---
 
-## Next Step
+## You're Ready — Start Ralph Loops
 
-Based on your strategy selection:
-- **Ralph Loop** → Proceed to **[07-RalphLoop.md](07-RalphLoop.md)**
-- **Parallel Build** → Proceed to **[08-ParallelBuild.md](08-ParallelBuild.md)**
-- **Hybrid** → Start with **[07-RalphLoop.md](07-RalphLoop.md)** for Phase 0
+### If SEQUENTIAL:
 
-All strategies use **[09-LongRunningWorkflow.md](09-LongRunningWorkflow.md)** for session management.
+Open one terminal and run:
+
+```bash
+/Users/mattod/.claude/plugins/marketplaces/claude-plugins-official/plugins/ralph-wiggum/scripts/setup-ralph-loop.sh "[PHASE_FOCUS]" --completion-promise "PHASE_COMPLETE" --max-iterations 50
+```
+
+See [07-RalphLoop.md](07-RalphLoop.md) for the full autonomous execution protocol.
+
+### If PARALLEL-READY:
+
+Open two terminals. In each, start with the agent prompt from [07-RalphLoop.md](07-RalphLoop.md) that includes:
+- Agent identity (A or B)
+- Boundary rules
+- Tasks for this agent
+- Ralph loop command with unique completion promise
+
+See [08-ParallelBuild.md](08-ParallelBuild.md) for coordination details.
 
 ---
 
-*Template version 1.0 | Part of the Workflow Documentation System*
+## Reference: Session Protocols
+
+For ongoing session management (session start/end prompts, checkpointing, etc.), see:
+- [09-LongRunningWorkflow.md](09-LongRunningWorkflow.md) — Detailed session management reference
+
+---
+
+*Template version 2.0 | Part of the Workflow Documentation System*

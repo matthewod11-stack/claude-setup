@@ -74,6 +74,41 @@ Feature B → Feature A
 Feature C → Foundation (parallel to A)
 ```
 
+### Step 2.5: Parallelizability Analysis ⭐
+
+**This step determines your execution strategy.** Answer this question:
+
+> Can features be cleanly split into independent domains with clear file ownership?
+
+**Criteria for parallelization:**
+- [ ] Features belong to distinct domains (e.g., "recipes" vs "meals")
+- [ ] Each domain has its own routes, services, and components
+- [ ] Domains share contracts/types but don't modify each other's implementation
+- [ ] Integration points are well-defined interfaces, not shared state
+
+**If YES (parallelizable):**
+- Mark the roadmap as `PARALLEL-READY`
+- Define agent boundaries (which domain each agent owns)
+- Execution will use 2+ ralph loops simultaneously
+
+**If NO (sequential):**
+- Mark the roadmap as `SEQUENTIAL`
+- Features must be built in dependency order
+- Execution will use 1 ralph loop
+
+**Output format (add to roadmap header):**
+```markdown
+> **Execution Mode:** PARALLEL-READY | Agents: 2
+> **Agent A Domain:** [domain-a] (routes, services, components)
+> **Agent B Domain:** [domain-b] (routes, services, components)
+> **Shared (read-only):** types/, contracts/, components/ui/, lib/[database]/
+```
+or
+```markdown
+> **Execution Mode:** SEQUENTIAL
+> **Reason:** [why parallelization doesn't work for this project]
+```
+
 ### Step 3: Phase Definition
 
 Group features into phases:
@@ -121,6 +156,8 @@ Create `[OUTPUT_FILE]` with this structure:
 > **Tech Stack:** [TECH_STACK]
 > **Timeline:** [TIMELINE]
 > **Created:** [DATE]
+> **Execution Mode:** [PARALLEL-READY | SEQUENTIAL]
+> **Agent Boundaries:** [if parallel, list domains per agent]
 
 ---
 

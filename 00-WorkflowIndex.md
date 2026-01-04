@@ -26,7 +26,9 @@ PLANNING PHASE                          EXECUTION PHASE
                     ┌─────────────┐     ┌─────────────┐
                     │ 05: Roadmap │◀────│   Merge     │
                     │  Creation   │     │   Feedback  │
-                    └─────────────┘     └─────────────┘
+                    │ ⭐ DECIDES  │     └─────────────┘
+                    │  PAR vs SEQ │
+                    └─────────────┘
                           │
                           ▼
                     ┌─────────────┐
@@ -34,13 +36,19 @@ PLANNING PHASE                          EXECUTION PHASE
                     │   Setup     │                      │
                     └─────────────┘                      │
                           │                              │
-            ┌─────────────┼─────────────┐               │
-            ▼             ▼             ▼               ▼
-      ┌──────────┐  ┌──────────┐  ┌──────────┐   ┌──────────┐
-      │ 07:Ralph │  │08:Parallel│  │  Hybrid  │   │09:Session│
-      │   Loop   │  │   Build  │  │ Approach │   │  Mgmt    │
-      └──────────┘  └──────────┘  └──────────┘   └──────────┘
+                          │ (reads mode from roadmap)    │
+                          │                              │
+            ┌─────────────┴─────────────┐               ▼
+            ▼                           ▼         ┌──────────┐
+      ┌──────────────┐          ┌──────────────┐  │09:Session│
+      │ SEQUENTIAL   │          │ PARALLEL     │  │  Mgmt    │
+      │ 1 Ralph Loop │          │ 2+ Ralph     │  └──────────┘
+      │              │          │ Loops        │
+      │ 07-RalphLoop │          │ 07+08        │
+      └──────────────┘          └──────────────┘
 ```
+
+**The meta-rule:** If parallelizable → parallel + ralph. If not → sequential + ralph. Simple.
 
 ---
 
@@ -52,8 +60,9 @@ PLANNING PHASE                          EXECUTION PHASE
 | A detailed spec | **02-RoadmapReview.md** |
 | Multiple AI reviews | **03-FeedbackConsolidation.md** |
 | Scope creep concerns | **04-V1Scoping.md** |
-| Spec + consolidated feedback | **05-RoadmapCreation.md** |
-| A roadmap, ready to build | **06-ExecutionSetup.md** |
+| Spec + consolidated feedback | **05-RoadmapCreation.md** (sets parallel vs sequential) |
+| A roadmap with execution mode | **06-ExecutionSetup.md** (scaffolds, then you're ready) |
+| Scaffolded project, ready to run | **07-RalphLoop.md** (start ralph loop(s)) |
 
 ---
 
@@ -73,10 +82,10 @@ PLANNING PHASE                          EXECUTION PHASE
 
 | Step | File | Input | Output | When to Use |
 |------|------|-------|--------|-------------|
-| 06 | [06-ExecutionSetup.md](06-ExecutionSetup.md) | Roadmap | Strategy + Scaffolding | Ready to start building |
-| 07 | [07-RalphLoop.md](07-RalphLoop.md) | Roadmap | Completed Code | Sequential, autonomous execution |
-| 08 | [08-ParallelBuild.md](08-ParallelBuild.md) | Roadmap | Completed Code | Parallel agents, clear boundaries |
-| 09 | [09-LongRunningWorkflow.md](09-LongRunningWorkflow.md) | Any | Session Infrastructure | Multi-week projects |
+| 06 | [06-ExecutionSetup.md](06-ExecutionSetup.md) | Roadmap | **Ready to run** (all scaffolding done) | Ready to start building |
+| 07 | [07-RalphLoop.md](07-RalphLoop.md) | Scaffolded project | Completed Code | Autonomous execution (1 or more loops) |
+| 08 | [08-ParallelBuild.md](08-ParallelBuild.md) | Scaffolded project | Completed Code | Parallel agent coordination details |
+| 09 | [09-LongRunningWorkflow.md](09-LongRunningWorkflow.md) | — | — | **Reference:** Session prompts, tips |
 
 ---
 
@@ -87,16 +96,23 @@ PLANNING PHASE                          EXECUTION PHASE
 - **Yes** → Go to **04-V1Scoping.md** to refocus
 - **No** → Continue to **05-RoadmapCreation.md**
 
+### At Step 05 (Roadmap Creation) ⭐ KEY DECISION
+**Question:** Can features be split into independent domains?
+
+| Answer | Roadmap Header | Execution |
+|--------|----------------|-----------|
+| **Yes** | `Execution Mode: PARALLEL-READY` | 2+ ralph loops, one per agent |
+| **No** | `Execution Mode: SEQUENTIAL` | 1 ralph loop |
+
+**Criteria for parallelization:**
+- Features belong to distinct domains (e.g., "recipes" vs "meals")
+- Each domain has its own routes, services, components
+- Integration points are contracts, not shared state
+
 ### At Step 06 (Execution Setup)
-**Question:** Which execution strategy fits this project?
+**Question:** Already answered — just read the roadmap header!
 
-| Choose... | When... |
-|-----------|---------|
-| **Ralph Loop** | Features are sequential, have test suite, want hands-off |
-| **Parallel Build** | Features can parallelize, tight timeline, clear boundaries |
-| **Hybrid** | Foundation is sequential, then features can parallelize |
-
-See **06-ExecutionSetup.md** for the full decision tree.
+The 05-RoadmapCreation step now includes parallelizability analysis. Step 06 simply scaffolds infrastructure based on that decision.
 
 ---
 
@@ -153,14 +169,15 @@ Day 4: Consolidation (Claude Code)
   └─▶ 03-FeedbackConsolidation → consolidated_feedback.md
   └─▶ 04-V1Scoping (if needed) → v1_roadmap.md
 
-Day 5: Roadmap (Claude Code)
-  └─▶ 05-RoadmapCreation → ROADMAP.md
+Day 5: Roadmap + Setup (Claude Code)
+  └─▶ 05-RoadmapCreation → ROADMAP.md (with execution mode)
+  └─▶ 06-ExecutionSetup → All infrastructure scaffolded, READY TO RUN
 
 Day 5+: Execution (Claude Code)
-  └─▶ 06-ExecutionSetup → Strategy selected, infrastructure scaffolded
-  └─▶ 07/08 → Building features phase by phase
+  └─▶ Start ralph loop(s) per 07-RalphLoop.md
+  └─▶ Use 09-LongRunningWorkflow.md for session prompts
 ```
 
 ---
 
-*Version 1.0 | Created 2025-01-03*
+*Version 2.0 | Updated 2025-01-03 | Decision point moved to Step 05*
