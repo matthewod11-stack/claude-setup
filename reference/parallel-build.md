@@ -395,7 +395,7 @@ BOUNDARY RULES:
 
 ## Session Management
 
-Use [09-LongRunningWorkflow.md](09-LongRunningWorkflow.md) for session management across all agents.
+Use [session-management.md](session-management.md) for session management across all agents.
 
 Each agent maintains its own SESSION_STATE.md or contributes to a shared PROGRESS.md.
 

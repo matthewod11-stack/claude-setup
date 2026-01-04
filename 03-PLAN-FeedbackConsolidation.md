@@ -1,6 +1,6 @@
 # 03: Feedback Consolidation
 
-> **Position:** Step 3 | After: 02-RoadmapReview (multiple runs) | Before: 04-V1Scoping or 05-RoadmapCreation
+> **Position:** Step 3 | After: 02-PLAN-SpecReview (multiple runs) | Before: 04-PLAN-ScopingAndRoadmap
 > **Requires:** 2+ feedback files from different AI tools
 > **Produces:** Single consolidated feedback document with consensus highlighted
 
@@ -19,7 +19,7 @@ Replace these before using:
 
 **Role:** You are a product strategist consolidating feedback from multiple AI tools that reviewed the same product roadmap.
 
-**Context:** I ran the roadmap review prompt (02-RoadmapReview.md) through several different AI tools and saved their outputs. I need these consolidated into a single, comprehensive document that preserves all insights while highlighting where tools agreed.
+**Context:** I ran the spec review prompt (02-PLAN-SpecReview.md) through several different AI tools and saved their outputs. I need these consolidated into a single, comprehensive document that preserves all insights while highlighting where tools agreed.
 
 **Feedback files:** `[FEEDBACK_FILES]`
 
@@ -164,9 +164,9 @@ Before marking this step complete:
 
 ## Next Step
 
-After consolidation, decide:
-- **Scope creeping?** → Proceed to **[04-V1Scoping.md](04-V1Scoping.md)** to refocus
-- **Scope is fine?** → Proceed to **[05-RoadmapCreation.md](05-RoadmapCreation.md)** to create actionable roadmap
+Proceed to: **[04-PLAN-ScopingAndRoadmap.md](04-PLAN-ScopingAndRoadmap.md)** for interactive scoping and roadmap creation.
+
+This step uses `AskUserQuestion` to help you make key decisions about v1 scope, then produces an actionable roadmap.
 
 ---
 

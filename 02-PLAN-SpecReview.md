@@ -1,6 +1,6 @@
 # 02: Roadmap Review
 
-> **Position:** Step 2 | After: 01-SpecInterview | Before: 03-FeedbackConsolidation
+> **Position:** Step 2 | After: 01-PLAN-SpecInterview | Before: 03-PLAN-FeedbackConsolidation
 > **Requires:** Detailed spec or roadmap document
 > **Produces:** Structured feedback document from AI reviewer
 
@@ -105,7 +105,7 @@ Before marking this step complete:
 
 ## Next Step
 
-After collecting 2+ reviews, proceed to: **[03-FeedbackConsolidation.md](03-FeedbackConsolidation.md)** to merge all feedback into a single document.
+After collecting 2+ reviews, proceed to: **[03-PLAN-FeedbackConsolidation.md](03-PLAN-FeedbackConsolidation.md)** to merge all feedback into a single document.
 
 ---
 

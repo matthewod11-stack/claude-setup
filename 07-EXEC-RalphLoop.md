@@ -210,7 +210,7 @@ Start the Ralph loop by running:
 
 ## Verification Principles
 
-From Boris (BorisWorkflow.md):
+From Boris (archive/boris-workflow.md):
 
 > "Give Claude a way to verify its work. A feedback loop 2-3x the quality of results."
 
@@ -228,7 +228,7 @@ Every task needs a verification method:
 
 ## Session Management
 
-This prompt is used with [09-LongRunningWorkflow.md](09-LongRunningWorkflow.md) for session management.
+This prompt is used with [reference/session-management.md](reference/session-management.md) for session management.
 
 **Session start:**
 ```bash

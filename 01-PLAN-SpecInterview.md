@@ -169,7 +169,7 @@ The refined spec should include:
 
 After completing the spec:
 - Use `/feature-dev` to validate the feature breakdown makes sense
-- Proceed to **02-RoadmapReview.md** for multi-agent review
+- Proceed to **02-PLAN-SpecReview.md** for multi-agent review
 
 ---
 
@@ -186,7 +186,7 @@ Before marking this step complete:
 
 ## Next Step
 
-Proceed to: **[02-RoadmapReview.md](02-RoadmapReview.md)** to get diverse AI perspectives on the spec.
+Proceed to: **[02-PLAN-SpecReview.md](02-PLAN-SpecReview.md)** to get diverse AI perspectives on the spec.
 
 ---
 

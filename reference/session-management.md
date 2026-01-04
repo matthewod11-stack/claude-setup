@@ -1,21 +1,24 @@
-# 09: Long-Running Workflow Reference
+# Session Management — Deep Dive Reference
 
-> **Position:** Reference Document | Used with: 06-ExecutionSetup, 07-RalphLoop, 08-ParallelBuild
-> **Purpose:** Reference for session management during multi-session projects
+> **Type:** Reference Document (not a workflow step)
+> **Primary Source:** Session prompts are scaffolded in your project via [../06-EXEC-Setup.md](../06-EXEC-Setup.md)
+> **This Doc:** Theory, diagrams, and tips for why session management works
 > **Based on:** [Anthropic: Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
-> **Note:** Session infrastructure is scaffolded in [06-ExecutionSetup.md](06-ExecutionSetup.md). This doc is for ongoing reference.
 
 ---
 
 ## When to Reference This Doc
 
-Use this as a reference when:
-- Starting a new session (session start prompt)
-- Ending a session (session end prompt)
-- Resuming after a break
-- Troubleshooting session management issues
+**Your project already has:**
+- `SESSION_PROMPTS.md` — The actual check-in/check-out prompts (scaffolded in step 06)
+- `scripts/dev-init.sh` — Session start script
+- `scripts/session-end.sh` — Session end script
 
-**Setup is in [06-ExecutionSetup.md](06-ExecutionSetup.md)** — this doc assumes infrastructure already exists.
+**Come here when you want to understand:**
+- Why this approach works
+- How sessions relate to context windows
+- Tips for avoiding common mistakes
+- Diagrams of the session flow
 
 ---
 
@@ -112,7 +115,7 @@ Pick next task ─────────────────► Next task?
 
 ## File Templates
 
-**Note:** File templates are scaffolded during [06-ExecutionSetup.md](06-ExecutionSetup.md). See that doc for the full templates. Below is a summary of what each file does:
+**Note:** File templates are scaffolded during [../06-EXEC-Setup.md](../06-EXEC-Setup.md). See that doc for the full templates. Below is a summary of what each file does:
 
 | File | Purpose |
 |------|---------|
@@ -126,66 +129,25 @@ Pick next task ─────────────────► Next task?
 
 ## Session Prompts
 
-### Session Start Prompt
+**Note:** The actual prompts are scaffolded into your project as `SESSION_PROMPTS.md` during step 06. This reference doc doesn't duplicate them.
 
-```
-I'm continuing work on [PROJECT NAME].
-
-This is a multi-session implementation. Please follow the session protocol:
-
-1. Run ./scripts/dev-init.sh to verify environment
-2. Read docs/PROGRESS.md for previous session work
-3. Read docs/ROADMAP.md to find the NEXT unchecked task
-4. Check features.json for pass/fail status
-5. Check docs/KNOWN_ISSUES.md for any blockers
-
-Work on ONE task only (single-feature-per-session rule). Tell me what's next.
-```
-
-### Session End Prompt
-
-```
-Before ending: Please follow session end protocol:
-
-1. Run verification (tests, type-check)
-2. Add session entry to TOP of docs/PROGRESS.md
-3. Update features.json with pass/fail status
-4. Check off completed task in docs/ROADMAP.md
-5. Commit with descriptive message
-
-What's the "Next Session Should" note for PROGRESS.md?
-```
-
-### Checkpoint Prompt (Mid-Session)
-
-```
-Let's checkpoint. Update docs/PROGRESS.md and features.json
-with current state, then we can continue.
-```
-
-### After Long Break Prompt
-
-```
-Resuming [PROJECT] after a break. Full context reload:
-
-1. Run ./scripts/dev-init.sh
-2. Read docs/SESSION_PROTOCOL.md (workflow rules)
-3. Read docs/PROGRESS.md (all session history)
-4. Check features.json and KNOWN_ISSUES.md
-
-Summarize: where are we, what's next, any blockers?
-```
+Your project will have:
+- `SESSION_PROMPTS.md` — Copy-paste prompts for check-in, check-out, checkpoint, resuming
+- `scripts/dev-init.sh` — Run at session start
+- `scripts/session-end.sh` — Run at session end
 
 ---
 
 ## Setup Checklist
 
-**Setup is handled by [06-ExecutionSetup.md](06-ExecutionSetup.md).** After completing Step 06, you will have:
+**Setup is handled by [../06-EXEC-Setup.md](../06-EXEC-Setup.md).** After completing Step 06, you will have:
 
+- `SESSION_PROMPTS.md` — Check-in/check-out prompts (in project root)
 - `docs/PROGRESS.md` — Session tracking
 - `docs/KNOWN_ISSUES.md` — Parking lot
 - `features.json` — Feature status
-- `scripts/dev-init.sh` — Session init script
+- `scripts/dev-init.sh` — Session start script
+- `scripts/session-end.sh` — Session end script
 - `PLANS/` — Task plan directory
 
 ---
@@ -233,9 +195,9 @@ Summarize: where are we, what's next, any blockers?
 
 ## Related Documents
 
-- [07-RalphLoop.md](07-RalphLoop.md) — Autonomous execution within sessions
-- [08-ParallelBuild.md](08-ParallelBuild.md) — Multi-agent parallel development
-- [00-WorkflowIndex.md](00-WorkflowIndex.md) — Master workflow navigation
+- [../07-EXEC-RalphLoop.md](../07-EXEC-RalphLoop.md) — Autonomous execution within sessions
+- [parallel-build.md](parallel-build.md) — Multi-agent parallel development
+- [../00-WorkflowIndex.md](../00-WorkflowIndex.md) — Master workflow navigation
 
 ---
 
