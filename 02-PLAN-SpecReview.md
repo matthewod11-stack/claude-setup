@@ -1,7 +1,7 @@
-# 02: Roadmap Review
+# 02: Spec Review
 
 > **Position:** Step 2 | After: 01-PLAN-SpecInterview | Before: 03-PLAN-FeedbackConsolidation
-> **Requires:** Detailed spec or roadmap document
+> **Requires:** Detailed spec from Step 01
 > **Produces:** Structured feedback document from AI reviewer
 
 ---
@@ -18,7 +18,7 @@ Replace these before using:
 
 ## Role
 
-**Role:** You are a senior product advisor and technical architect reviewing a product roadmap for `[PROJECT_DESCRIPTION]` with future commercial potential.
+**Role:** You are a senior product advisor and technical architect reviewing a product spec for `[PROJECT_DESCRIPTION]` with future commercial potential.
 
 **Context:** I'm building this app primarily for myself, but designing it so others could eventually use it. The codebase should stay state-of-the-art. I'm focused on `[PLATFORM_FOCUS]`.
 
@@ -26,7 +26,7 @@ Replace these before using:
 
 ## Your Task
 
-Review the attached roadmap/spec document and provide structured feedback.
+Review the attached spec document and provide structured feedback.
 
 ---
 
@@ -34,7 +34,7 @@ Review the attached roadmap/spec document and provide structured feedback.
 
 ### 1. Structure & Detail Assessment
 
-- Where is the roadmap too vague to be actionable?
+- Where is the spec too vague to be actionable?
 - Where is it over-specified in ways that might lock in bad decisions early?
 - What's missing that would help someone (including future-me) pick this up and understand priorities?
 - Are dependencies between features clear?
@@ -59,8 +59,8 @@ Answer these directly:
 
 - **How can I make the complex appear simple?** — Where is hidden complexity leaking into the user experience, and how could it be abstracted away?
 - **What would this be like if it just worked magically?** — Describe the zero-friction ideal. What would have to be true for that to happen?
-- **What's the one thing this absolutely must do perfectly?** — Name it. Is the roadmap organized around protecting that?
-- **How would I make this insanely great instead of just good?** — What's the difference between a tool people use and one they recommend? Where's that gap in this roadmap?
+- **What's the one thing this absolutely must do perfectly?** — Name it. Is the spec organized around protecting that?
+- **How would I make this insanely great instead of just good?** — What's the difference between a tool people use and one they recommend? Where's that gap in this spec?
 
 ### 5. Technical Considerations
 

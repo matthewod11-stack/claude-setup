@@ -1,7 +1,7 @@
 # 07: Ralph Loop (Autonomous Execution)
 
 > **Position:** Step 7 (execution) | After: 06-ExecutionSetup | Works with: 08-ParallelBuild
-> **Requires:** ROADMAP.md + SESSION_STATE.md + PLANS/ directory
+> **Requires:** ROADMAP.md + docs/PROGRESS.md + PLANS/ directory
 > **Produces:** Completed code, feature by feature
 > **Best For:** Both sequential and parallel execution — ralph loops run inside each agent
 
@@ -31,10 +31,10 @@ You are operating in an autonomous development loop. Follow this protocol exactl
 
 ## Session Start Protocol
 
-1. Read `SESSION_STATE.md` for current progress and context
+1. Read `docs/PROGRESS.md` for current progress and context
 2. Read `ROADMAP.md` for task list and completion status
 3. Identify the next incomplete task
-4. If resuming a partial task, review the "Last Attempt" notes in SESSION_STATE.md
+4. If resuming a partial task, review the "Last Attempt" notes in docs/PROGRESS.md
 
 ---
 
@@ -88,7 +88,7 @@ When a task requires API keys, auth tokens, third-party credentials, or other ex
 
 ## Session End Protocol
 
-Before outputting your completion promise, update SESSION_STATE.md:
+Before outputting your completion promise, update docs/PROGRESS.md:
 - Timestamp
 - Current task and status (complete/in-progress/blocked)
 - What was accomplished this iteration
@@ -113,6 +113,33 @@ Before outputting your completion promise, update SESSION_STATE.md:
 4. **Commit frequently** with descriptive messages
 5. **Don't refactor unrelated code**
 6. If a task is ambiguous, document your interpretation in the plan before proceeding
+
+---
+
+## Soft Warning Conditions
+
+These are signals that you may want to pause and reconsider. Use your judgment — these are warnings, not hard stops.
+
+### Consider Stopping If:
+
+| Condition | Why It Matters | Suggested Action |
+|-----------|----------------|------------------|
+| Same error 3+ consecutive attempts | You may be missing context or taking wrong approach | Step back, re-read plan, try different angle |
+| Task scope has grown beyond original acceptance criteria | Scope creep can derail the phase | Note in plan, ask if this is still the right task |
+| You need to modify files outside your boundary (parallel) | Boundary violations cause merge conflicts | Document the need, flag for orchestrator |
+| Tests pass but behavior feels wrong | Passing tests ≠ correct behavior | Add more specific tests, verify against requirements |
+| You're unsure which of 2+ valid approaches to take | Arbitrary choice now may cause rework later | Pick simplest, document alternatives in plan |
+| Task is taking significantly longer than similar tasks | May indicate hidden complexity or wrong approach | Checkpoint progress, reassess plan |
+
+### When to Actually Stop
+
+Output `<promise>BLOCKED</promise>` or flag for human if:
+- You've tried 3+ different approaches and all failed
+- The task fundamentally conflicts with another requirement
+- You discover the roadmap/spec is incorrect
+- External dependency is actually blocking (not stubbable)
+
+**Philosophy:** It's better to pause and ask than to iterate 20 times heading the wrong direction.
 
 ---
 
@@ -182,8 +209,8 @@ SHARED (read-only - do NOT modify):
 YOUR TASKS:
 [list from ROADMAP.md for this agent]
 
-Read SESSION_STATE.md and ROADMAP.md, then begin. Create a plan in PLANS/ before
-implementing each task. Update SESSION_STATE.md after completing each task.
+Read docs/PROGRESS.md and ROADMAP.md, then begin. Create a plan in PLANS/ before
+implementing each task. Update docs/PROGRESS.md after completing each task.
 Commit frequently with [Agent A/B] suffix.
 
 Start the Ralph loop by running:
@@ -203,7 +230,7 @@ Start the Ralph loop by running:
 
 **Context management:**
 - Enable auto-compact for long-running loops
-- Agents update SESSION_STATE.md frequently
+- Agents update docs/PROGRESS.md frequently
 - If context runs out, restart and resume from docs
 
 ---
@@ -236,7 +263,7 @@ This prompt is used with [reference/session-management.md](reference/session-man
 ```
 
 **Mid-session checkpoint:**
-"Update SESSION_STATE.md and features.json with current state"
+"Update docs/PROGRESS.md and features.json with current state"
 
 ---
 
@@ -247,6 +274,45 @@ When phase is complete:
 - Add any API keys / external configs
 - Update features.json status
 - Start next phase with fresh Ralph Loop
+
+---
+
+## After Phase 0: Create CLAUDE.md
+
+Once your foundation scaffolding is in place and patterns are emerging, create `CLAUDE.md` in the project root. This file persists across all sessions and gives Claude Code project-specific context.
+
+**Why after Phase 0:** You can't write good project instructions until you know what patterns actually emerged. The scaffolding shapes the conventions.
+
+### Template
+
+```markdown
+# CLAUDE.md
+
+## Project
+[PROJECT_NAME] — [one-line description]
+
+## Tech Stack
+[List technologies, frameworks, versions]
+
+## Key Patterns
+- [Pattern]: [Why we use it and how]
+- [Convention]: [What to follow]
+
+## Gotchas
+- [Thing that's easy to get wrong]
+- [Non-obvious behavior]
+
+## Commands
+- Test: `[command]`
+- Build: `[command]`
+- Dev server: `[command]`
+- Type check: `[command]`
+
+## Project-Specific Rules
+- [Any rules specific to this codebase]
+```
+
+**Update it as you go:** When you discover a new pattern or gotcha during development, add it to CLAUDE.md immediately.
 
 ---
 

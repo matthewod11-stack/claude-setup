@@ -1,7 +1,7 @@
 # 05: Roadmap Review (Optional)
 
 > **Position:** Step 5 (optional) | After: 04-PLAN-ScopingAndRoadmap | Before: 06-EXEC-Setup
-> **Requires:** `v1_roadmap.md` from step 04
+> **Requires:** `ROADMAP.md` from step 04
 > **Produces:** Validated roadmap with identified gaps, risks, or refinements
 > **When to Use:** When you want a second opinion before committing to execution
 
@@ -12,7 +12,7 @@
 Replace these before using:
 - `[PROJECT_NAME]` - Your project name
 - `[V1_SUCCESS_CRITERIA]` - Your success criteria from the roadmap
-- `[ROADMAP_FILE]` - Path to v1_roadmap.md
+- `[ROADMAP_FILE]` - Path to ROADMAP.md
 
 ---
 

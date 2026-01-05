@@ -2,7 +2,7 @@
 
 > **Position:** Step 4 | After: 03-PLAN-FeedbackConsolidation | Before: 05-PLAN-RoadmapValidation
 > **Requires:** Detailed spec + consolidated feedback
-> **Produces:** `v1_roadmap.md` + `v2_parking_lot.md`
+> **Produces:** `ROADMAP.md` + `v2_parking_lot.md`
 > **Purpose:** Transform a massive spec and feedback into a focused, actionable v1 roadmap
 
 ---
@@ -195,7 +195,7 @@ For each V1 feature, define:
 
 Generate two files:
 
-### File 1: `v1_roadmap.md`
+### File 1: `ROADMAP.md`
 
 ```markdown
 # [PROJECT_NAME] — V1 Roadmap

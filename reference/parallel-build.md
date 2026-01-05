@@ -397,7 +397,7 @@ BOUNDARY RULES:
 
 Use [session-management.md](session-management.md) for session management across all agents.
 
-Each agent maintains its own SESSION_STATE.md or contributes to a shared PROGRESS.md.
+Each agent contributes session updates to `docs/PROGRESS.md` (newest entries at top).
 
 ---
 

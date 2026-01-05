@@ -33,8 +33,8 @@ Review all feedback and produce a consolidated `[OUTPUT_FILE]` that I can use to
 
 ## Ground Rules
 
-1. **Nothing gets cut.** Every piece of feedback from every tool must appear somewhere in the output. This is a consolidation, not a summary.
-2. **Preserve the original structure.** Use the same 5 sections from the feedback files.
+1. **Triage-first.** Lead with prioritized, actionable items. Put raw tool-by-tool notes in an appendix so nothing is lost, but the main document should be decision-ready.
+2. **Preserve structure.** Use the same 5 sections from the feedback files.
 3. **Attribute sources.** Tag each point with which tool(s) raised it (e.g., `[Claude]`, `[Grok]`, `[Claude, Grok]`).
 4. **Flag consensus.** When 2+ tools raised the same issue or idea (even if worded differently), mark it with a `🔺 CONSENSUS` tag. These are high-signal items.
 5. **Keep it actionable.** Each point should be something I can act on or decide about. If a tool was vague, note that rather than dropping it.
@@ -135,10 +135,13 @@ List every new feature/idea proposed. Group duplicates.
 
 ## Appendix: Tool-by-Tool Raw Notes
 
-If any feedback didn't fit cleanly into the structure above, capture it here by tool. Nothing should be lost.
+Full unedited feedback from each tool. Nothing is lost — this is the reference when questions arise about specific tool perspectives.
 
 ### [Tool Name]
-- [Orphaned point]
+(Paste or summarize full feedback here)
+
+### [Tool Name 2]
+(Paste or summarize full feedback here)
 ```
 
 ---
@@ -154,11 +157,11 @@ If any feedback didn't fit cleanly into the structure above, capture it here by 
 ## Verification
 
 Before marking this step complete:
-- [ ] All feedback from all tools is captured
+- [ ] Consensus Summary leads with prioritized action items
 - [ ] Consensus items are tagged with 🔺
 - [ ] Divergent opinions are tagged with ⚠️
-- [ ] Consensus Summary section is populated
-- [ ] No feedback was lost in consolidation
+- [ ] Appendix contains raw notes from each tool (nothing lost)
+- [ ] Main sections are decision-ready, not exhaustive
 
 ---
 

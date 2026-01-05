@@ -7,6 +7,45 @@
 
 ---
 
+## Task Flow
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  TASK 1: Core Setup (ALWAYS DO)                                 │
+│  Parts 1-2: Read mode, scaffold docs/PROGRESS.md, features.json,│
+│  scripts, SESSION_PROMPTS.md, PLANS/                            │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────┐
+              │ Roadmap says PARALLEL-READY?  │
+              └───────────────────────────────┘
+                    │                  │
+                   YES                 NO
+                    │                  │
+                    ▼                  ▼
+┌─────────────────────────────┐  ┌─────────────────────────────┐
+│  TASK 2: Parallel Setup     │  │  Skip to Exit Checklist     │
+│  Part 3: Agent boundaries,  │  │  You're ready to run a      │
+│  orchestrator, prompts      │  │  single ralph loop          │
+└─────────────────────────────┘  └─────────────────────────────┘
+                    │                  │
+                    └────────┬─────────┘
+                             ▼
+              ┌───────────────────────────────┐
+              │  Exit Checklist → Start       │
+              │  07-EXEC-RalphLoop            │
+              └───────────────────────────────┘
+```
+
+**Quick nav:**
+- [Part 1: Read Execution Mode](#part-1-read-execution-mode-from-roadmap)
+- [Part 2: Scaffold Core Infrastructure](#part-2-scaffold-session-infrastructure) ← Always
+- [Part 3: Parallel-Specific Setup](#part-3-parallel-specific-setup-if-applicable) ← Only if PARALLEL-READY
+- [Exit Checklist](#exit-checklist)
+
+---
+
 ## Variables
 
 Replace these before using:

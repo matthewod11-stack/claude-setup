@@ -81,12 +81,90 @@ PLANNING PHASE                          EXECUTION PHASE
 
 ---
 
+## Workflow Tiers
+
+Not every project needs the full workflow. Choose your tier based on project seriousness:
+
+### 🟢 Lite Tier
+**For:** Side projects, toy apps, quick prototypes, friend's silly idea, simple websites, games
+
+**Steps:** `01 → 04 → 06 → 07`
+
+**Skip:** Steps 02, 03, 05 (multi-AI review, consolidation, validation)
+
+**Scaffolding:** Minimal — ROADMAP.md, basic PROGRESS.md
+
+**Signals you're in Lite territory:**
+- You've built similar things before
+- No external API integrations
+- Single domain (just one "thing" the app does)
+- You could explain the whole app in 2 minutes
+- If it breaks, nobody's day is ruined
+
+---
+
+### 🔵 Full Tier
+**For:** Real systems, production apps, projects with integrations, APIs, data pipelines, multi-domain complexity
+
+**Steps:** `01 → 02 → 03 (if multi-review) → 04 → 05 (optional) → 06 → 07`
+
+**Scaffolding:** Full — ROADMAP.md, PROGRESS.md, features.json, SESSION_PROMPTS.md, scripts
+
+**Signals you're in Full territory:**
+- External API integrations (Yahoo, Stripe, etc.)
+- AI/LLM components that need careful prompting
+- Multiple distinct domains that interact
+- Data that matters (user data, financial, health)
+- You'd be embarrassed if it failed publicly
+- Parallel execution is likely
+
+---
+
+### Quick Tier Decision
+
+```
+Is this a "real" project with integrations, multiple domains, or data that matters?
+    │
+    ├── YES → 🔵 Full Tier
+    │
+    └── NO → Could you rebuild it in a weekend if it caught fire?
+                │
+                ├── YES → 🟢 Lite Tier
+                │
+                └── NO → 🔵 Full Tier
+```
+
+---
+
 ## Quick Start
+
+### Where Do I Jump In?
+
+```
+What do you have right now?
+    │
+    ├── Just an idea/PRD ──────────────────▶ 01-PLAN-SpecInterview.md
+    │
+    ├── A detailed spec ───────────────────▶ 02-PLAN-SpecReview.md (Full)
+    │                                        or 04-PLAN-ScopingAndRoadmap.md (Lite)
+    │
+    ├── Multiple AI reviews to merge ──────▶ 03-PLAN-FeedbackConsolidation.md
+    │
+    ├── Spec + feedback, need roadmap ─────▶ 04-PLAN-ScopingAndRoadmap.md
+    │
+    ├── Roadmap, want validation ──────────▶ 05-PLAN-RoadmapValidation.md (optional)
+    │
+    ├── Roadmap with execution mode set ───▶ 06-EXEC-Setup.md
+    │
+    └── Scaffolded project, ready to build ▶ 07-EXEC-RalphLoop.md
+```
+
+### Reference Table
 
 | If you have... | Start at... |
 |----------------|-------------|
 | A PRD from ideation | **01-PLAN-SpecInterview.md** |
-| A detailed spec | **02-PLAN-SpecReview.md** |
+| A detailed spec | **02-PLAN-SpecReview.md** (Full) or **04** (Lite) |
 | Multiple AI reviews | **03-PLAN-FeedbackConsolidation.md** |
 | Spec + consolidated feedback | **04-PLAN-ScopingAndRoadmap.md** |
 | A roadmap, want validation | **05-PLAN-RoadmapValidation.md** (optional) |
@@ -104,8 +182,8 @@ PLANNING PHASE                          EXECUTION PHASE
 | 01 | [01-PLAN-SpecInterview.md](01-PLAN-SpecInterview.md) | PRD | Detailed Spec | Have a PRD, need detailed spec |
 | 02 | [02-PLAN-SpecReview.md](02-PLAN-SpecReview.md) | Spec | Multiple Reviews | Want diverse AI perspectives |
 | 03 | [03-PLAN-FeedbackConsolidation.md](03-PLAN-FeedbackConsolidation.md) | Reviews | Consolidated Feedback | Have 2+ AI reviews to merge |
-| 04 | [04-PLAN-ScopingAndRoadmap.md](04-PLAN-ScopingAndRoadmap.md) | Spec + Feedback | v1_roadmap.md + v2_parking_lot.md | Interactive scoping → roadmap |
-| 05 | [05-PLAN-RoadmapValidation.md](05-PLAN-RoadmapValidation.md) | v1_roadmap.md | Validated Roadmap | **Optional:** Skeptical review |
+| 04 | [04-PLAN-ScopingAndRoadmap.md](04-PLAN-ScopingAndRoadmap.md) | Spec + Feedback | ROADMAP.md + v2_parking_lot.md | Interactive scoping → roadmap |
+| 05 | [05-PLAN-RoadmapValidation.md](05-PLAN-RoadmapValidation.md) | ROADMAP.md | Validated Roadmap | **Optional:** Skeptical review |
 
 ### Execution Phase
 
@@ -205,7 +283,7 @@ Day 3: Multi-Agent Review (Cursor + multiple AI)
 
 Day 4: Consolidation + Scoping (Claude Code)
   └─▶ 03-PLAN-FeedbackConsolidation → consolidated_feedback.md
-  └─▶ 04-PLAN-ScopingAndRoadmap → v1_roadmap.md + v2_parking_lot.md
+  └─▶ 04-PLAN-ScopingAndRoadmap → ROADMAP.md + v2_parking_lot.md
 
 Day 5: Validation + Setup (Claude Code)
   └─▶ 05-PLAN-RoadmapValidation (optional) → Validated roadmap
