@@ -49,7 +49,7 @@ This workflow builds on ideas from:
 
 - **[Thariq](https://thariq.io)** ([@trq212](https://x.com/trq212/status/2005315275026260309)) — The spec interview pattern using `AskUserQuestionTool` to deeply interview before building. This directly inspired Step 01.
 
-- **[Boris Cherny](https://x.com/ArbiterVince)** — Creator of Claude Code. His core principle "Give Claude a way to verify its work" is foundational here. See [reference/boris-workflow.md](reference/boris-workflow.md).
+- **[Boris Cherny](https://x.com/bcherny/status/2007179832300581177)** — Creator of Claude Code. His core principle "Give Claude a way to verify its work" is foundational here. See [reference/boris-workflow.md](reference/boris-workflow.md).
 
 - **[Anthropic Engineering Blog](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)** — "Effective Harnesses for Long-Running Agents" informed the session management patterns.
 
