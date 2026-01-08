@@ -33,6 +33,24 @@ Developers using [Claude Code](https://claude.ai/code) who want:
 
 Start at [00-WorkflowIndex.md](00-WorkflowIndex.md) for navigation.
 
+## Session Commands
+
+Global commands available in any project (install to `~/.claude/commands/`):
+
+| Command | Purpose |
+|---------|---------|
+| `/session-start` | Begin work session — verify env, review progress, find next task |
+| `/session-end` | End session — verify code, update tracking, commit |
+| `/checkpoint` | Mid-session save without full shutdown |
+| `/orchestrate` | Parallel build coordination — generate agent prompts, check status, phase transitions |
+
+**To install globally:**
+```bash
+cp -r .claude/commands/* ~/.claude/commands/
+```
+
+See [reference/Claude-Code-Session-Skills-Guide.md](reference/Claude-Code-Session-Skills-Guide.md) for the pattern.
+
 ## Key Concepts
 
 **Tiers** — Lite for toys, Full for production. Don't over-engineer simple projects.
@@ -42,6 +60,21 @@ Start at [00-WorkflowIndex.md](00-WorkflowIndex.md) for navigation.
 **Session Artifacts** — `ROADMAP.md` (task status), `docs/PROGRESS.md` (session history), `CLAUDE.md` (project context).
 
 **Parallelization** — Decided at Step 04. If domains are independent, run multiple ralph loops.
+
+## Project Structure
+
+```
+claude-setup/
+├── .claude/commands/        # Session management commands
+├── reference/               # Research, protocols, source docs
+│   ├── session-*-protocol.md   # Session command protocols
+│   ├── SKILLS-ANALYSIS.md      # Skills evaluation
+│   └── DYNAMIC_CONTEXT_*.md    # Context optimization research
+├── templates/               # Starter files for new projects
+├── 00-07-*.md              # Workflow step documentation
+├── CLAUDE.md               # Project configuration
+└── PROGRESS.md             # Session log
+```
 
 ## Credits & Sources
 

@@ -1,0 +1,20 @@
+{
+  "project": "[PROJECT_NAME]",
+  "version": "0.1.0",
+  "features": [
+    {
+      "id": "feature-1",
+      "name": "Feature Name",
+      "description": "Brief description of the feature",
+      "status": "pending",
+      "notes": ""
+    }
+  ],
+  "statusValues": {
+    "pending": "Not started",
+    "wip": "Work in progress",
+    "blocked": "Blocked by dependency or issue",
+    "pass": "Completed and verified",
+    "skip": "Intentionally skipped"
+  }
+}
