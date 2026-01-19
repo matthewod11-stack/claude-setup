@@ -255,15 +255,13 @@ Every task needs a verification method:
 
 ## Session Management
 
-This prompt is used with [reference/session-management.md](reference/session-management.md) for session management.
+Use Claude Code skills for session management (see [reference/session-management.md](reference/session-management.md) for deep dive):
 
-**Session start:**
-```bash
-./scripts/dev-init.sh
-```
-
-**Mid-session checkpoint:**
-"Update docs/PROGRESS.md and features.json with current state"
+| When | Skill | Fallback |
+|------|-------|----------|
+| Session start | `/session-start` | `./scripts/dev-init.sh` |
+| Mid-session save | `/checkpoint` | Manual: update PROGRESS.md |
+| Session end | `/session-end` | `./scripts/session-end.sh` |
 
 ---
 

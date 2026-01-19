@@ -330,91 +330,54 @@ mkdir -p PLANS
 
 This is where task plans go before implementation.
 
-### 6. SESSION_PROMPTS.md (CRITICAL — Keep this handy)
+### 6. SESSION_PROMPTS.md (Quick Reference)
 
-This file contains the exact prompts you'll use to check in and out. **Scaffold this in your project root.**
+Session management is handled by Claude Code skills. Scaffold this quick reference in your project root.
 
 ```markdown
-# Session Prompts — [PROJECT_NAME]
+# Session Management — [PROJECT_NAME]
 
-> **PURPOSE:** Copy-paste these prompts at session start/end. Non-negotiable.
-
----
-
-## CHECK IN (Session Start)
-
-Copy this at the start of every session:
-
-\`\`\`
-I'm continuing work on [PROJECT_NAME].
-
-Session protocol:
-1. Run ./scripts/dev-init.sh to verify environment
-2. Read docs/PROGRESS.md for previous session work
-3. Read ROADMAP.md to find the NEXT unchecked task
-4. Check features.json for pass/fail status
-5. Check docs/KNOWN_ISSUES.md for any blockers
-
-Work on ONE task only (single-feature-per-session). Tell me what's next.
-\`\`\`
-
----
-
-## CHECK OUT (Session End)
-
-Copy this before ending ANY session:
-
-\`\`\`
-Session ending. Follow end protocol:
-
-1. Run verification (tests, type-check)
-2. Add session entry to TOP of docs/PROGRESS.md
-3. Update features.json with pass/fail status
-4. Check off completed task in ROADMAP.md
-5. Commit with descriptive message
-
-What's the "Next Session Should" note for PROGRESS.md?
-\`\`\`
-
----
-
-## CHECKPOINT (Mid-Session, anytime)
-
-Use when context is getting long or you want to save state:
-
-\`\`\`
-Let's checkpoint. Update docs/PROGRESS.md and features.json
-with current state, then we can continue.
-\`\`\`
-
----
-
-## RESUMING AFTER LONG BREAK
-
-Use if you haven't worked on this in a while:
-
-\`\`\`
-Resuming [PROJECT_NAME] after a break. Full context reload:
-
-1. Run ./scripts/dev-init.sh
-2. Read docs/PROGRESS.md (all session history)
-3. Check features.json and KNOWN_ISSUES.md
-4. Read ROADMAP.md for current phase
-
-Summarize: where are we, what's next, any blockers?
-\`\`\`
+> **PRIMARY METHOD:** Use Claude Code skills (available in all projects with the plugin installed)
+> **FALLBACK:** Scripts and manual prompts below
 
 ---
 
 ## Quick Reference
 
-| When | Action |
-|------|--------|
-| Starting work | Run dev-init.sh → Paste CHECK IN prompt |
-| Task complete | Update docs, commit, continue or CHECK OUT |
-| Context long | Paste CHECKPOINT prompt |
-| Stopping work | Paste CHECK OUT prompt → Wait for handoff notes |
-| After break | Paste RESUMING prompt |
+| When | Skill Command | Fallback |
+|------|---------------|----------|
+| Starting work | `/session-start` | `./scripts/dev-init.sh` |
+| Mid-session save | `/checkpoint` | Manual: update PROGRESS.md |
+| Ending work | `/session-end` | `./scripts/session-end.sh` |
+
+---
+
+## What the Skills Do
+
+**`/session-start`** — Verifies environment, reads progress, identifies next task
+**`/checkpoint`** — Saves current state without full shutdown
+**`/session-end`** — Runs verification, updates docs, prepares handoff notes
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `docs/PROGRESS.md` | Session-by-session work log |
+| `features.json` | Pass/fail status tracking |
+| `docs/KNOWN_ISSUES.md` | Blockers and parking lot |
+| `ROADMAP.md` | Task checklist |
+
+---
+
+## Manual Fallback (if skills unavailable)
+
+**Session Start:** Run `./scripts/dev-init.sh`, then read PROGRESS.md and ROADMAP.md
+
+**Session End:** Run verification, update PROGRESS.md (entry at TOP), update features.json, check off ROADMAP.md tasks, commit
+
+**Checkpoint:** Update PROGRESS.md and features.json with current state
 
 ---
 ```
@@ -474,18 +437,11 @@ echo -e "  [ ] Checked off completed task in ROADMAP.md?"
 echo -e "  [ ] Written 'Next Session Should' note?"
 echo ""
 
-echo -e "${YELLOW}Paste this to Claude before ending:${NC}"
+echo -e "${YELLOW}Run session end:${NC}"
 echo ""
-cat << 'EOF'
-Session ending. Follow end protocol:
-1. Run verification (tests, type-check)
-2. Add session entry to TOP of docs/PROGRESS.md
-3. Update features.json with pass/fail status
-4. Check off completed task in ROADMAP.md
-5. Commit with descriptive message
-
-What's the "Next Session Should" note for PROGRESS.md?
-EOF
+echo "  /session-end"
+echo ""
+echo -e "${BLUE}(Or manually: update PROGRESS.md, features.json, ROADMAP.md, then commit)${NC}"
 
 echo ""
 echo -e "${GREEN}=== Done ===${NC}"
@@ -895,7 +851,8 @@ Paste this into your ROADMAP.md or keep handy:
 ╠═══════════════════════════════════════════════════════════════════════╣
 ║                                                                       ║
 ║  SESSION START:                                                       ║
-║    ./scripts/dev-init.sh                                              ║
+║    /session-start                                                     ║
+║    (or ./scripts/dev-init.sh for env check only)                      ║
 ║                                                                       ║
 ║  DURING SESSION:                                                      ║
 ║    • Work on ONE task at a time                                       ║
@@ -903,14 +860,10 @@ Paste this into your ROADMAP.md or keep handy:
 ║    • Commit frequently                                                ║
 ║                                                                       ║
 ║  CHECKPOINT (context getting long):                                   ║
-║    "Update PROGRESS.md and features.json with current state"          ║
+║    /checkpoint                                                        ║
 ║                                                                       ║
 ║  SESSION END (before compaction):                                     ║
-║    1. Run verification (tests, typecheck)                             ║
-║    2. Add session entry to TOP of docs/PROGRESS.md                    ║
-║    3. Update features.json status                                     ║
-║    4. Check off tasks in ROADMAP.md                                   ║
-║    5. Commit with descriptive message                                 ║
+║    /session-end                                                       ║
 ║                                                                       ║
 ║  IF BLOCKED:                                                          ║
 ║    Add to KNOWN_ISSUES.md → Move to next task                         ║
@@ -964,7 +917,7 @@ Before proceeding, verify:
 - [ ] `SESSION_PROMPTS.md` exists in project root
 - [ ] `scripts/dev-init.sh` exists and is executable
 - [ ] `scripts/session-end.sh` exists and is executable
-- [ ] You know where to find CHECK IN / CHECK OUT prompts
+- [ ] You know the session skills (`/session-start`, `/session-end`, `/checkpoint`)
 
 **Parallel-Specific (if PARALLEL-READY):**
 - [ ] `AGENT_BOUNDARIES.md` exists with domain ownership

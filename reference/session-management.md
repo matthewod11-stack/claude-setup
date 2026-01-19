@@ -9,10 +9,12 @@
 
 ## When to Reference This Doc
 
-**Your project already has:**
-- `SESSION_PROMPTS.md` — The actual check-in/check-out prompts (scaffolded in step 06)
-- `scripts/dev-init.sh` — Session start script
-- `scripts/session-end.sh` — Session end script
+**Primary method:** Use Claude Code skills (`/session-start`, `/session-end`, `/checkpoint`)
+
+**Your project also has (as fallbacks):**
+- `SESSION_PROMPTS.md` — Quick reference and manual fallback prompts
+- `scripts/dev-init.sh` — Environment verification script
+- `scripts/session-end.sh` — Session end checklist script
 
 **Come here when you want to understand:**
 - Why this approach works
@@ -61,7 +63,8 @@ Context compaction alone is insufficient. Claude loses details, forgets decision
 ╠═══════════════════════════════════════════════════════════════════════╣
 ║                                                                       ║
 ║  SESSION START:                                                       ║
-║    ./scripts/dev-init.sh                                              ║
+║    /session-start                                                     ║
+║    (or ./scripts/dev-init.sh for env check only)                      ║
 ║                                                                       ║
 ║  DURING SESSION:                                                      ║
 ║    • Work on ONE task at a time                                       ║
@@ -69,16 +72,10 @@ Context compaction alone is insufficient. Claude loses details, forgets decision
 ║    • Commit frequently with descriptive messages                      ║
 ║                                                                       ║
 ║  CHECKPOINT (anytime, especially if context getting long):            ║
-║    "Update PROGRESS.md and features.json with current state"          ║
+║    /checkpoint                                                        ║
 ║                                                                       ║
 ║  SESSION END (before compaction or stopping work):                    ║
-║    "Before ending: Please follow session end protocol:                ║
-║     1. Run verification                                               ║
-║     2. Add session entry to TOP of PROGRESS.md                        ║
-║     3. Update features.json with pass/fail status                     ║
-║     4. Check off completed task in ROADMAP.md                         ║
-║     5. Commit with descriptive message                                ║
-║     What's the 'Next Session Should' note for PROGRESS.md?"           ║
+║    /session-end                                                       ║
 ║                                                                       ║
 ║  IF BLOCKED:                                                          ║
 ║    Add to KNOWN_ISSUES.md → Move to next independent task             ║
@@ -129,12 +126,12 @@ Pick next task ─────────────────► Next task?
 
 ## Session Prompts
 
-**Note:** The actual prompts are scaffolded into your project as `SESSION_PROMPTS.md` during step 06. This reference doc doesn't duplicate them.
+**Primary method:** Use Claude Code skills — `/session-start`, `/session-end`, `/checkpoint`
 
-Your project will have:
-- `SESSION_PROMPTS.md` — Copy-paste prompts for check-in, check-out, checkpoint, resuming
-- `scripts/dev-init.sh` — Run at session start
-- `scripts/session-end.sh` — Run at session end
+**Fallbacks (if skills unavailable):**
+- `SESSION_PROMPTS.md` — Quick reference with manual fallback instructions
+- `scripts/dev-init.sh` — Environment verification
+- `scripts/session-end.sh` — End-of-session checklist
 
 ---
 
@@ -142,12 +139,13 @@ Your project will have:
 
 **Setup is handled by [../06-EXEC-Setup.md](../06-EXEC-Setup.md).** After completing Step 06, you will have:
 
-- `SESSION_PROMPTS.md` — Check-in/check-out prompts (in project root)
+- **Session skills** — `/session-start`, `/session-end`, `/checkpoint` (primary method)
+- `SESSION_PROMPTS.md` — Quick reference with fallback instructions
 - `docs/PROGRESS.md` — Session tracking
 - `docs/KNOWN_ISSUES.md` — Parking lot
 - `features.json` — Feature status
-- `scripts/dev-init.sh` — Session start script
-- `scripts/session-end.sh` — Session end script
+- `scripts/dev-init.sh` — Environment verification (fallback)
+- `scripts/session-end.sh` — End checklist (fallback)
 - `PLANS/` — Task plan directory
 
 ---
