@@ -1,7 +1,10 @@
 # Compound Engineering Research
 
 > **Purpose:** Analyze the Compound Engineering Plugin and evaluate how its concepts could enhance the claude-setup workflow system.
-> **Source:** https://github.com/kieranklaassen/compound-engineering-plugin
+> **Sources:**
+> - https://github.com/EveryInc/compound-engineering-plugin (official)
+> - https://github.com/kieranklaassen/compound-engineering-plugin (fork/mirror)
+> - https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents (methodology)
 
 ---
 
@@ -14,6 +17,34 @@ The Compound Engineering Plugin introduces a **knowledge compounding loop** that
 2. Introduce **multi-agent review** patterns for the `/spec-review` step
 3. Create a **solutions library** for documented problem resolutions
 4. Consider **parallel agent execution** for research phases
+
+---
+
+## Origin & Real-World Validation
+
+### Every.to — The Source
+
+The Compound Engineering Plugin originates from **Every.to** (EveryInc), a media/software company that runs five production products, each primarily built and maintained by a single person using this methodology. These aren't demos — they serve thousands of users daily.
+
+**Repository relationship:**
+- `EveryInc/compound-engineering-plugin` — Official source
+- `kieranklaassen/compound-engineering-plugin` — Fork/mirror (Kieran Klaassen appears to be a contributor)
+
+### Production-Proven Scale
+
+| Metric | Value |
+|--------|-------|
+| **Products in production** | 5 |
+| **Team size per product** | ~1 person |
+| **Daily active users** | Thousands |
+| **Specialized agents** | 27 |
+| **Slash commands** | 20 |
+| **Skills** | 14 |
+
+The single-person-per-product model only works because:
+1. Knowledge compounds — each solved problem accelerates future work
+2. AI agents handle the cognitive load that would require teams
+3. Systematic processes replace heroic individual effort
 
 ---
 
@@ -31,12 +62,22 @@ This inverts traditional software development where most time is spent coding. T
 Plan → Work → Review → Compound → (repeat)
 ```
 
-| Step | Command | Purpose |
-|------|---------|---------|
-| Plan | `/workflows:plan` | Convert ideas into detailed implementation plans |
-| Work | `/workflows:work` | Execute plans using structured task loops |
-| Review | `/workflows:review` | Multi-agent code review before merge |
-| Compound | `/workflows:compound` | Document learnings for future reference |
+Alternative framing from CLAUDE.md: **Plan → Delegate → Assess → Codify**
+
+| Step | Command | Purpose | Time Allocation |
+|------|---------|---------|-----------------|
+| Plan | `/workflows:plan` | Convert ideas into detailed implementation plans | 40% |
+| Work | `/workflows:work` | Execute plans using structured task loops | 20% |
+| Review | `/workflows:review` | Multi-agent code review before merge | 20% |
+| Compound | `/workflows:compound` | Document learnings for future reference | 20% |
+
+### Core Principles (from Every.to)
+
+1. **Prefer duplication over wrong abstraction** — Simple, clear code beats complex abstractions
+2. **Document as you go** — Every command generates documentation
+3. **Quality compounds** — High-quality code is easier to modify
+4. **Systematic beats heroic** — Consistent processes beat individual heroics
+5. **Knowledge should be codified** — Learnings must be captured and reused
 
 ### What Makes It "Compound"
 
@@ -347,7 +388,72 @@ The strongest addition from Compound Engineering is the **explicit knowledge cap
    - `/session-end` could prompt: "Document what you learned?"
    - `/session-start` could surface relevant solutions
 
+5. **Should we adopt the plugin directly?**
+   - Install via `/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin`
+   - Or extract concepts into claude-setup's existing structure
+   - Recommendation: Extract concepts first, evaluate plugin later
+
+---
+
+## Technical Details: The Plugin
+
+### Installation
+
+```bash
+# Add marketplace
+/plugin marketplace add https://github.com/EveryInc/compound-engineering-plugin
+
+# Install plugin
+/plugin install compound-engineering
+```
+
+### MCP Server Integration
+
+The plugin includes two MCP servers requiring manual configuration in `.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@anthropic/mcp-playwright"]
+    }
+  }
+}
+```
+
+**Context7** provides framework documentation lookup across 100+ frameworks (Rails, React, Next.js, Vue, Django, Laravel, etc.).
+
+### Component Inventory
+
+| Category | Count | Examples |
+|----------|-------|----------|
+| **Agents** | 27 | Rails/Python/TS reviewers, security sentinel, architecture strategist |
+| **Commands** | 20 | workflows:plan/work/review/compound, test-browser, release-docs |
+| **Skills** | 14 | Architecture design, Rails/DSPy.rb patterns, S3/R2 file transfer |
+| **MCP Servers** | 2 | Context7 (docs), Playwright (browser automation) |
+
+### Agent Categories
+
+- **Review (14):** Domain experts + cross-cutting concerns
+- **Research (4):** Framework docs, git history, best practices
+- **Design (3):** UI implementation, design iteration
+- **Workflow (5):** Bug validation, PR resolution, spec analysis
+- **Documentation (1):** README generation
+
+---
+
+## Further Reading
+
+- [Compound Engineering: How Every Codes With Agents](https://every.to/chain-of-thought/compound-engineering-how-every-codes-with-agents) — Original methodology article
+- [EveryInc/compound-engineering-plugin](https://github.com/EveryInc/compound-engineering-plugin) — Official repository
+- [Plugin Documentation](https://github.com/EveryInc/compound-engineering-plugin/tree/main/docs) — Detailed component reference
+
 ---
 
 *Research completed: January 2026*
-*Source: github.com/kieranklaassen/compound-engineering-plugin*
+*Sources: github.com/EveryInc/compound-engineering-plugin, every.to*
