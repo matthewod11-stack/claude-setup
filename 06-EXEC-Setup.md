@@ -14,6 +14,23 @@
 
 The skills read/write the tracking files you'll create below. Scripts serve as fallbacks for environments where skills aren't installed.
 
+### Context Management (Avoiding Bloat)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  PROGRESS.md (Active)          │  PROGRESS_ARCHIVE.md (Historical) │
+│  ─────────────────────         │  ──────────────────────────────── │
+│  • Max 10 sessions             │  • Unlimited sessions              │
+│  • Read every /session-start   │  • Read only when needed           │
+│  • Kept lean for fast context  │  • Full history preserved          │
+│                                │                                    │
+│  When > 10 sessions:           │                                    │
+│  Oldest sessions ──────────────┼──► Moved here automatically        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Why this matters:** Claude reads PROGRESS.md at session start. If it contains 50 sessions of history, that's wasted context tokens. By limiting to 10 recent sessions and archiving the rest, you keep session starts fast and focused.
+
 ---
 
 ## Task Flow
@@ -110,18 +127,24 @@ mkdir -p docs PLANS scripts
 
 The skills read this to understand where the session left off.
 
+> ⚠️ **Context Management:** This file is intentionally kept lean (max 10 sessions) to avoid context bloat. Older sessions are automatically archived by `/session-end` or the archive script.
+
 ```markdown
 # [PROJECT_NAME] — Session Progress Log
 
-> **Purpose:** Track progress across sessions. Keeps last ~10 entries.
-> **Archive:** Older sessions are in `docs/PROGRESS_ARCHIVE.md`
+> **Purpose:** Track progress across sessions. **Limited to 10 most recent entries.**
+> **Archive:** Older sessions → `docs/PROGRESS_ARCHIVE.md`
+> **Why:** Prevents context bloat when Claude reads this file at session start.
 
 ---
 
 <!--
-=== ADD NEW SESSIONS AT THE TOP ===
-Most recent session should be first.
-When > 10 sessions, /session-end moves oldest to PROGRESS_ARCHIVE.md
+╔════════════════════════════════════════════════════════════════╗
+║  ARCHIVING: This file auto-archives to stay lean               ║
+║  - Max 10 sessions kept here                                   ║
+║  - /session-end moves older sessions to PROGRESS_ARCHIVE.md    ║
+║  - Add new sessions at TOP (most recent first)                 ║
+╚════════════════════════════════════════════════════════════════╝
 -->
 
 ## Session [DATE] (Setup)
@@ -162,17 +185,29 @@ When > 10 sessions, /session-end moves oldest to PROGRESS_ARCHIVE.md
 
 Old sessions get moved here automatically to keep PROGRESS.md lean.
 
+> 📁 **Archive Purpose:** This file stores historical session logs. Reference it when you need to understand past decisions or trace when something was implemented. Claude does NOT read this file automatically—only on request.
+
 ```markdown
 # [PROJECT_NAME] — Progress Archive
 
-> **Purpose:** Historical session logs moved here to keep PROGRESS.md lean.
-> **Note:** Only the most recent ~10 sessions stay in PROGRESS.md.
+> **Purpose:** Historical session logs (overflow from PROGRESS.md)
+> **When to read:** Investigating past decisions, debugging regressions, understanding history
+> **Auto-populated:** By `/session-end` when PROGRESS.md exceeds 10 sessions
+
+---
+
+## How to Use This Archive
+
+If you need historical context:
+1. Search for specific dates or keywords
+2. Look for "Phase X" entries to find when features were built
+3. Check "Blocked" or "Issues" mentions to understand past problems
 
 ---
 
 ## Archived Sessions
 
-*(Sessions are prepended here by /session-end or the archive script)*
+*(Sessions are prepended here by /session-end or scripts/archive-old-sessions.sh)*
 ```
 
 ### 3. features.json
@@ -398,7 +433,7 @@ echo -e "${GREEN}=== Done ===${NC}"
 
 ### 9. scripts/archive-old-sessions.sh
 
-Automatically moves sessions beyond the 10 most recent to the archive.
+> 🔄 **Auto-Archive Script:** This is the engine that keeps PROGRESS.md lean. Called by `session-end.sh`, it counts sessions and moves anything beyond the 10 most recent to PROGRESS_ARCHIVE.md. You can also run it manually anytime.
 
 ```bash
 #!/bin/bash
@@ -474,9 +509,11 @@ chmod +x scripts/dev-init.sh scripts/session-end.sh scripts/archive-old-sessions
 
 | Skill | Reads | Writes |
 |-------|-------|--------|
-| `/session-start` | PROGRESS.md, ROADMAP.md, features.json | — |
+| `/session-start` | PROGRESS.md (lean!), ROADMAP.md, features.json | — |
 | `/checkpoint` | — | PROGRESS.md, features.json |
-| `/session-end` | PROGRESS.md, features.json, ROADMAP.md | PROGRESS.md, features.json, PROGRESS_ARCHIVE.md |
+| `/session-end` | PROGRESS.md, features.json, ROADMAP.md | PROGRESS.md, features.json, **PROGRESS_ARCHIVE.md** (overflow) |
+
+> **Note:** `/session-end` triggers archiving—if PROGRESS.md has >10 sessions, older ones move to PROGRESS_ARCHIVE.md automatically.
 
 ---
 
@@ -509,7 +546,8 @@ chmod +x scripts/dev-init.sh scripts/session-end.sh scripts/archive-old-sessions
 ┌─────────────────────────────────────────────────────────────┐
 │  /session-end                                               │
 │  • Runs verification (typecheck, tests)                     │
-│  • Archives old sessions (> 10) to PROGRESS_ARCHIVE.md      │
+│  • ⚡ ARCHIVES old sessions (> 10) to PROGRESS_ARCHIVE.md   │
+│       └─► Keeps PROGRESS.md lean for next session start     │
 │  • Adds session entry to TOP of PROGRESS.md                 │
 │  • Updates features.json                                    │
 │  • Commits changes                                          │
