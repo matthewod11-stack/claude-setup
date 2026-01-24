@@ -7,13 +7,22 @@
 
 ---
 
+## Session Management Philosophy
+
+**Primary Method:** Claude Code skills (`/session-start`, `/session-end`, `/checkpoint`)
+**Fallback:** Shell scripts when skills aren't available
+
+The skills read/write the tracking files you'll create below. Scripts serve as fallbacks for environments where skills aren't installed.
+
+---
+
 ## Task Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  TASK 1: Core Setup (ALWAYS DO)                                 │
-│  Parts 1-2: Read mode, scaffold docs/PROGRESS.md, features.json,│
-│  scripts, SESSION_PROMPTS.md, PLANS/                            │
+│  Parts 1-2: Read mode, scaffold tracking files + fallback       │
+│  scripts that skills read/write                                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -89,7 +98,7 @@ or
 
 ## Part 2: Scaffold Session Infrastructure
 
-Create ALL of these files. This is the complete session management setup.
+Create ALL of these files. The skills read/write these; scripts are fallbacks.
 
 ### Directory Structure
 
@@ -97,19 +106,22 @@ Create ALL of these files. This is the complete session management setup.
 mkdir -p docs PLANS scripts
 ```
 
-### 1. docs/PROGRESS.md
+### 1. PROGRESS.md (repo root)
+
+The skills read this to understand where the session left off.
 
 ```markdown
 # [PROJECT_NAME] — Session Progress Log
 
-> **Purpose:** Track progress across multiple sessions. Each session adds an entry.
-> **How to Use:** Add a new "## Session YYYY-MM-DD" section at the TOP after each work session.
+> **Purpose:** Track progress across sessions. Keeps last ~10 entries.
+> **Archive:** Older sessions are in `docs/PROGRESS_ARCHIVE.md`
 
 ---
 
 <!--
 === ADD NEW SESSIONS AT THE TOP ===
 Most recent session should be first.
+When > 10 sessions, /session-end moves oldest to PROGRESS_ARCHIVE.md
 -->
 
 ## Session [DATE] (Setup)
@@ -119,26 +131,10 @@ Most recent session should be first.
 
 ### Completed
 - [x] Set up session tracking infrastructure
-- [x] Created PROGRESS.md, features.json, KNOWN_ISSUES.md
-- [x] Created dev-init.sh script
-
-### Verified
-- [x] All documentation files created
-- [x] Dev init script works
 
 ### Next Session Should
-- Start with: Phase 0, Task 1
-- Be aware of: [Any context]
-
----
-
-## Pre-Implementation State
-
-**Repository State Before Work:**
-- [Describe current state]
-
-**Key Files That Exist:**
-- [List existing relevant files]
+- Start with: [specific task]
+- Be aware of: [any context]
 
 ---
 
@@ -147,49 +143,68 @@ Most recent session should be first.
 ## Session YYYY-MM-DD
 
 **Phase:** X.Y
-**Focus:** [One sentence describing the session goal]
+**Focus:** [One sentence]
 
 ### Completed
-- [x] Task 1 description
-- [x] Task 2 description
+- [x] Task 1
 
 ### Verified
 - [ ] Tests pass
-- [ ] Type check passes
-
-### Notes
-[Any important context for future sessions]
 
 ### Next Session Should
-- Start with: [specific task]
-- Be aware of: [any gotchas]
+- Start with: [task]
+- Be aware of: [gotchas]
 
 -->
 ```
 
-### 2. features.json
+### 2. docs/PROGRESS_ARCHIVE.md
+
+Old sessions get moved here automatically to keep PROGRESS.md lean.
+
+```markdown
+# [PROJECT_NAME] — Progress Archive
+
+> **Purpose:** Historical session logs moved here to keep PROGRESS.md lean.
+> **Note:** Only the most recent ~10 sessions stay in PROGRESS.md.
+
+---
+
+## Archived Sessions
+
+*(Sessions are prepended here by /session-end or the archive script)*
+```
+
+### 3. features.json
+
+Pass/fail tracking that mirrors the roadmap. Skills update this as tasks complete.
 
 ```json
 {
   "$schema": "./features.schema.json",
   "_meta": {
-    "description": "Feature tracking. Status: not-started | in-progress | pass | fail | blocked",
+    "description": "Status: not-started | in-progress | pass | fail | blocked",
     "lastUpdated": "[DATE]",
     "project": "[PROJECT_NAME]",
     "executionMode": "[sequential|parallel]"
   },
   "phase-0": {
-    "task-1": { "status": "not-started", "notes": "" },
-    "task-2": { "status": "not-started", "notes": "" }
+    "0.1-task-name": { "status": "not-started", "notes": "" },
+    "0.2-task-name": { "status": "not-started", "notes": "" }
   },
   "phase-1": {
-    "feature-1": { "status": "not-started", "notes": "" },
-    "feature-2": { "status": "not-started", "notes": "" }
+    "1.1-task-name": { "status": "not-started", "notes": "" }
   }
 }
 ```
 
-### 3. docs/KNOWN_ISSUES.md
+**Notes:**
+- `$schema` is optional — remove if not using validation, or copy schema from weezy if needed
+- Task IDs should match ROADMAP.md task numbers for easy cross-reference
+
+### 4. docs/KNOWN_ISSUES.md
+
+Blockers and deferred decisions.
 
 ```markdown
 # [PROJECT_NAME] — Known Issues & Parking Lot
@@ -198,28 +213,9 @@ Most recent session should be first.
 
 ---
 
-## How to Use
-
-**Add issues here when:**
-- You encounter a bug that isn't blocking current work
-- You discover something that needs investigation later
-- A decision needs to be made but can wait
-
-**Format:**
-```
-### [PHASE-X] Brief description
-**Status:** Open | Resolved | Deferred
-**Severity:** Blocker | High | Medium | Low
-**Discovered:** YYYY-MM-DD
-**Description:** What happened
-**Workaround:** (if any)
-```
-
----
-
 ## Open Issues
 
-*(Add issues here)*
+*(None yet)*
 
 ---
 
@@ -231,19 +227,17 @@ Most recent session should be first.
 
 ## Deferred Decisions
 
-*(Decisions that can wait until later)*
+*(Decisions that can wait)*
 ```
 
-### 4. scripts/dev-init.sh
+### 5. scripts/dev-init.sh (Fallback for /session-start)
 
 ```bash
 #!/bin/bash
-# Session Initialization Script
-# Run at the start of each development session
+# Session Initialization Script — Fallback for /session-start
 
 set -e
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -255,13 +249,7 @@ echo ""
 
 # 1. Check required files
 echo -e "${BLUE}Checking files...${NC}"
-
-REQUIRED_FILES=(
-    "docs/PROGRESS.md"
-    "docs/KNOWN_ISSUES.md"
-    "features.json"
-    "ROADMAP.md"
-)
+REQUIRED_FILES=("PROGRESS.md" "docs/KNOWN_ISSUES.md" "features.json" "ROADMAP.md")
 
 for file in "${REQUIRED_FILES[@]}"; do
     if [ -f "$file" ]; then
@@ -272,57 +260,51 @@ for file in "${REQUIRED_FILES[@]}"; do
 done
 
 # 2. Install dependencies if needed
-if [ -d "node_modules" ]; then
-    echo -e "${GREEN}✓${NC} node_modules exists"
+if [ -d "src" ]; then
+    if [ -d "node_modules" ]; then
+        echo -e "${GREEN}✓${NC} node_modules exists"
+    else
+        echo -e "${YELLOW}Installing dependencies...${NC}"
+        npm install
+    fi
 else
-    echo -e "${YELLOW}Installing dependencies...${NC}"
-    npm install
+    echo -e "${YELLOW}⚠${NC} src/ not yet created"
 fi
 
 # 3. Run verification
 echo ""
 echo -e "${BLUE}Running verification...${NC}"
-
-if npm run typecheck > /dev/null 2>&1; then
-    echo -e "${GREEN}✓${NC} Type check passes"
+if [ -f "package.json" ]; then
+    npm run typecheck > /dev/null 2>&1 && echo -e "${GREEN}✓${NC} Type check passes" || echo -e "${YELLOW}⚠${NC} Type check failed"
 else
-    echo -e "${YELLOW}⚠${NC} Type check failed or not configured"
+    echo -e "${YELLOW}⚠${NC} No package.json yet"
 fi
 
-# 4. Show progress
+# 4. Show recent progress
 echo ""
 echo -e "${BLUE}=== Recent Progress ===${NC}"
-if [ -f "docs/PROGRESS.md" ]; then
-    awk '/^## Session/{if(found)exit; found=1} found' docs/PROGRESS.md | head -20
-fi
+[ -f "PROGRESS.md" ] && awk '/^## Session/{if(found)exit; found=1} found' PROGRESS.md | head -25
 
 # 5. Show feature status
 echo ""
 echo -e "${BLUE}=== Feature Status ===${NC}"
 if [ -f "features.json" ]; then
     PASS=$(grep -c '"status": "pass"' features.json 2>/dev/null || echo "0")
-    FAIL=$(grep -c '"status": "fail"' features.json 2>/dev/null || echo "0")
     IN_PROGRESS=$(grep -c '"status": "in-progress"' features.json 2>/dev/null || echo "0")
-    echo -e "${GREEN}Pass:${NC} $PASS | ${RED}Fail:${NC} $FAIL | ${YELLOW}In Progress:${NC} $IN_PROGRESS"
+    NOT_STARTED=$(grep -c '"status": "not-started"' features.json 2>/dev/null || echo "0")
+    echo -e "${GREEN}Pass:${NC} $PASS | ${YELLOW}In Progress:${NC} $IN_PROGRESS | Not Started: $NOT_STARTED"
 fi
 
 # 6. Show next tasks
 echo ""
 echo -e "${BLUE}=== Next Tasks ===${NC}"
-if [ -f "ROADMAP.md" ]; then
-    grep -n "\[ \]" ROADMAP.md | head -5
-fi
+[ -f "ROADMAP.md" ] && grep -n "\[ \]" ROADMAP.md | head -5
 
 echo ""
 echo -e "${GREEN}=== Ready ===${NC}"
 ```
 
-Make it executable:
-```bash
-chmod +x scripts/dev-init.sh
-```
-
-### 5. PLANS/ Directory
+### 6. PLANS/ Directory
 
 ```bash
 mkdir -p PLANS
@@ -330,17 +312,12 @@ mkdir -p PLANS
 
 This is where task plans go before implementation.
 
-### 6. SESSION_PROMPTS.md (Quick Reference)
+### 7. SESSION_PROMPTS.md (Quick Reference)
 
-Session management is handled by Claude Code skills. Scaffold this quick reference in your project root.
+Place in project root for easy reference.
 
 ```markdown
 # Session Management — [PROJECT_NAME]
-
-> **PRIMARY METHOD:** Use Claude Code skills (available in all projects with the plugin installed)
-> **FALLBACK:** Scripts and manual prompts below
-
----
 
 ## Quick Reference
 
@@ -350,48 +327,24 @@ Session management is handled by Claude Code skills. Scaffold this quick referen
 | Mid-session save | `/checkpoint` | Manual: update PROGRESS.md |
 | Ending work | `/session-end` | `./scripts/session-end.sh` |
 
----
-
-## What the Skills Do
-
-**`/session-start`** — Verifies environment, reads progress, identifies next task
-**`/checkpoint`** — Saves current state without full shutdown
-**`/session-end`** — Runs verification, updates docs, prepares handoff notes
-
----
-
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `docs/PROGRESS.md` | Session-by-session work log |
+| `PROGRESS.md` | Session-by-session work log |
 | `features.json` | Pass/fail status tracking |
 | `docs/KNOWN_ISSUES.md` | Blockers and parking lot |
 | `ROADMAP.md` | Task checklist |
-
----
-
-## Manual Fallback (if skills unavailable)
-
-**Session Start:** Run `./scripts/dev-init.sh`, then read PROGRESS.md and ROADMAP.md
-
-**Session End:** Run verification, update PROGRESS.md (entry at TOP), update features.json, check off ROADMAP.md tasks, commit
-
-**Checkpoint:** Update PROGRESS.md and features.json with current state
-
----
 ```
 
-### 7. scripts/session-end.sh
+### 8. scripts/session-end.sh (Fallback for /session-end)
 
 ```bash
 #!/bin/bash
-# Session End Script
-# Run at the end of each development session (or use the CHECK OUT prompt)
+# Session End Script — Fallback for /session-end
 
 set -e
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -403,54 +356,164 @@ echo ""
 
 # 1. Run verification
 echo -e "${BLUE}Running verification...${NC}"
-
-if npm run typecheck > /dev/null 2>&1; then
-    echo -e "${GREEN}✓${NC} Type check passes"
+if [ -f "package.json" ]; then
+    npm run typecheck > /dev/null 2>&1 && echo -e "${GREEN}✓${NC} Type check passes" || echo -e "${YELLOW}⚠${NC} Type check failed"
+    npm test > /dev/null 2>&1 && echo -e "${GREEN}✓${NC} Tests pass" || echo -e "${YELLOW}⚠${NC} Tests failed"
 else
-    echo -e "${YELLOW}⚠${NC} Type check failed or not configured"
+    echo -e "${YELLOW}⚠${NC} No package.json yet"
 fi
 
-if npm test > /dev/null 2>&1; then
-    echo -e "${GREEN}✓${NC} Tests pass"
-else
-    echo -e "${YELLOW}⚠${NC} Tests failed or not configured"
-fi
-
-# 2. Check uncommitted changes
+# 2. Git status
 echo ""
 echo -e "${BLUE}Git status:${NC}"
 git status --short
+[ -n "$(git status --porcelain)" ] && echo -e "${YELLOW}⚠ Uncommitted changes${NC}" || echo -e "${GREEN}✓${NC} Clean"
 
-if [ -n "$(git status --porcelain)" ]; then
-    echo -e "${YELLOW}⚠ You have uncommitted changes${NC}"
-else
-    echo -e "${GREEN}✓${NC} Working tree clean"
+# 3. Feature status
+echo ""
+echo -e "${BLUE}=== Feature Status ===${NC}"
+if [ -f "features.json" ]; then
+    PASS=$(grep -c '"status": "pass"' features.json 2>/dev/null || echo "0")
+    FAIL=$(grep -c '"status": "fail"' features.json 2>/dev/null || echo "0")
+    IN_PROGRESS=$(grep -c '"status": "in-progress"' features.json 2>/dev/null || echo "0")
+    echo -e "${GREEN}Pass:${NC} $PASS | ${RED}Fail:${NC} $FAIL | ${YELLOW}In Progress:${NC} $IN_PROGRESS"
 fi
 
-# 3. Remind about docs
+# 4. Archive old sessions
+echo ""
+echo -e "${BLUE}=== Archiving ===${NC}"
+[ -x "scripts/archive-old-sessions.sh" ] && ./scripts/archive-old-sessions.sh || echo -e "${YELLOW}⚠${NC} Archive script not found"
+
+# 5. Reminder
 echo ""
 echo -e "${BLUE}=== Before Closing ===${NC}"
-echo -e "Have you:"
-echo -e "  [ ] Added session entry to TOP of docs/PROGRESS.md?"
-echo -e "  [ ] Updated features.json with pass/fail status?"
-echo -e "  [ ] Checked off completed task in ROADMAP.md?"
-echo -e "  [ ] Written 'Next Session Should' note?"
-echo ""
-
-echo -e "${YELLOW}Run session end:${NC}"
-echo ""
-echo "  /session-end"
-echo ""
-echo -e "${BLUE}(Or manually: update PROGRESS.md, features.json, ROADMAP.md, then commit)${NC}"
+echo "  [ ] Added session entry to TOP of PROGRESS.md?"
+echo "  [ ] Updated features.json with pass/fail status?"
+echo "  [ ] Checked off completed tasks in ROADMAP.md?"
+echo "  [ ] Written 'Next Session Should' note?"
 
 echo ""
 echo -e "${GREEN}=== Done ===${NC}"
 ```
 
-Make it executable:
+### 9. scripts/archive-old-sessions.sh
+
+Automatically moves sessions beyond the 10 most recent to the archive.
 
 ```bash
-chmod +x scripts/session-end.sh
+#!/bin/bash
+# Archive Old Sessions — Called by session-end.sh
+
+set -e
+
+PROGRESS_FILE="PROGRESS.md"
+ARCHIVE_FILE="docs/PROGRESS_ARCHIVE.md"
+MAX_SESSIONS=10
+
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# Count real sessions (not template)
+SESSION_COUNT=$(grep "^## Session [0-9]" "$PROGRESS_FILE" 2>/dev/null | wc -l | tr -d ' ')
+
+if [ "$SESSION_COUNT" -le "$MAX_SESSIONS" ]; then
+    echo -e "${GREEN}✓${NC} $SESSION_COUNT sessions (max: $MAX_SESSIONS) — no archiving needed"
+    exit 0
+fi
+
+echo -e "${YELLOW}Archiving old sessions...${NC}"
+
+TEMP_KEEP=$(mktemp)
+TEMP_ARCHIVE=$(mktemp)
+
+awk -v max="$MAX_SESSIONS" '
+    BEGIN { session_count = 0; in_template = 0 }
+    /^<!-- Template for future sessions:/ { in_template = 1 }
+    /^## Session [0-9]/ { session_count++ }
+    {
+        if (in_template || session_count <= max) {
+            print > "'"$TEMP_KEEP"'"
+        } else if (session_count > max) {
+            print > "'"$TEMP_ARCHIVE"'"
+        }
+    }
+' "$PROGRESS_FILE"
+
+if [ -s "$TEMP_ARCHIVE" ]; then
+    ARCHIVED_COUNT=$((SESSION_COUNT - MAX_SESSIONS))
+
+    if [ -f "$ARCHIVE_FILE" ]; then
+        awk -v archive_content="$(cat "$TEMP_ARCHIVE")" '
+            BEGIN { inserted = 0 }
+            /^---$/ && !inserted {
+                print; print ""; print "## === Archived on '"$(date +%Y-%m-%d)"' ==="; print ""
+                print archive_content; inserted = 1; next
+            }
+            { print }
+        ' "$ARCHIVE_FILE" > "${ARCHIVE_FILE}.tmp"
+        mv "${ARCHIVE_FILE}.tmp" "$ARCHIVE_FILE"
+    fi
+
+    mv "$TEMP_KEEP" "$PROGRESS_FILE"
+    echo -e "${GREEN}✓${NC} Archived $ARCHIVED_COUNT session(s)"
+fi
+
+rm -f "$TEMP_KEEP" "$TEMP_ARCHIVE" 2>/dev/null || true
+```
+
+### Make Scripts Executable
+
+```bash
+chmod +x scripts/dev-init.sh scripts/session-end.sh scripts/archive-old-sessions.sh
+```
+
+---
+
+## How Skills Use These Files
+
+| Skill | Reads | Writes |
+|-------|-------|--------|
+| `/session-start` | PROGRESS.md, ROADMAP.md, features.json | — |
+| `/checkpoint` | — | PROGRESS.md, features.json |
+| `/session-end` | PROGRESS.md, features.json, ROADMAP.md | PROGRESS.md, features.json, PROGRESS_ARCHIVE.md |
+
+---
+
+## Workflow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  /session-start                                             │
+│  • Reads PROGRESS.md → "Next Session Should"                │
+│  • Shows feature status from features.json                  │
+│  • Identifies next task from ROADMAP.md                     │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  Work on tasks                                              │
+│  • Update features.json as tasks complete                   │
+│  • Check off tasks in ROADMAP.md                            │
+│  • Add issues to KNOWN_ISSUES.md if blocked                 │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  /checkpoint (optional, mid-session)                        │
+│  • Updates PROGRESS.md with current state                   │
+│  • Updates features.json                                    │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│  /session-end                                               │
+│  • Runs verification (typecheck, tests)                     │
+│  • Archives old sessions (> 10) to PROGRESS_ARCHIVE.md      │
+│  • Adds session entry to TOP of PROGRESS.md                 │
+│  • Updates features.json                                    │
+│  • Commits changes                                          │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -571,7 +634,7 @@ Work through these in order:
 ## Session Protocol
 
 1. Run `./scripts/dev-init.sh` (server already running in orchestrator)
-2. Read `docs/PROGRESS.md` for context
+2. Read `PROGRESS.md` for context
 3. Work ONE task at a time
 4. Commit after each task: `feat([domain]): description [Agent A/B]`
 5. Update `features.json` after each task
@@ -873,7 +936,7 @@ Paste this into your ROADMAP.md or keep handy:
 
 ---
 
-## Part 5: Commit Infrastructure
+## Part 4: Commit Infrastructure
 
 ### Sequential Projects
 
@@ -881,12 +944,14 @@ Paste this into your ROADMAP.md or keep handy:
 git add docs/ PLANS/ scripts/ features.json ROADMAP.md SESSION_PROMPTS.md
 git commit -m "chore: scaffold session management infrastructure
 
-- Add docs/PROGRESS.md for session tracking
+- Add PROGRESS.md for session tracking
+- Add docs/PROGRESS_ARCHIVE.md for historical sessions
 - Add docs/KNOWN_ISSUES.md for parking lot
 - Add features.json for pass/fail tracking
-- Add scripts/dev-init.sh for session init
-- Add scripts/session-end.sh for session end
-- Add SESSION_PROMPTS.md with check-in/check-out prompts
+- Add scripts/dev-init.sh (fallback for /session-start)
+- Add scripts/session-end.sh (fallback for /session-end)
+- Add scripts/archive-old-sessions.sh for auto-archiving
+- Add SESSION_PROMPTS.md quick reference
 - Add PLANS/ directory for task plans"
 ```
 
@@ -908,15 +973,17 @@ git commit -m "chore: add parallel execution infrastructure
 Before proceeding, verify:
 
 **Infrastructure (ALL projects):**
-- [ ] `docs/PROGRESS.md` exists with initial session entry
+- [ ] `PROGRESS.md` exists with initial session entry
+- [ ] `docs/PROGRESS_ARCHIVE.md` exists
 - [ ] `docs/KNOWN_ISSUES.md` exists
 - [ ] `features.json` exists with all tasks from roadmap
 - [ ] `PLANS/` directory exists
 
-**Session Management (NON-NEGOTIABLE):**
+**Session Management:**
 - [ ] `SESSION_PROMPTS.md` exists in project root
 - [ ] `scripts/dev-init.sh` exists and is executable
 - [ ] `scripts/session-end.sh` exists and is executable
+- [ ] `scripts/archive-old-sessions.sh` exists and is executable
 - [ ] You know the session skills (`/session-start`, `/session-end`, `/checkpoint`)
 
 **Parallel-Specific (if PARALLEL-READY):**
@@ -964,4 +1031,4 @@ For deeper context on WHY this approach works:
 
 ---
 
-*Template version 2.0 | Part of the Workflow Documentation System*
+*Template version 3.0 | Skills-first session management | Part of the Workflow Documentation System*
