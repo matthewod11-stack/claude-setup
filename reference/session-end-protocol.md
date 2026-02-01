@@ -77,7 +77,64 @@ If `ROADMAP.md` exists:
 
 ---
 
-## Step 5: Stage and Review Changes
+## Step 5: Knowledge Compound Check
+
+Before committing, check if this session involved significant problem-solving that should be captured.
+
+### Detection Triggers
+
+Prompt "Document what you learned?" if ANY of these apply:
+
+1. **Bug fix commits:** Recent commits contain "fix", "bug", "resolve", "patch"
+   ```bash
+   git log --oneline -5 | grep -iE "fix|bug|resolve|patch"
+   ```
+
+2. **Significant debugging:** Multiple commits touching the same file, or session involved substantial investigation
+
+3. **New pattern introduced:** First usage of a library/API, architectural decision made
+
+### If Triggered
+
+Use AskUserQuestion:
+
+**Question:** "This session involved significant problem-solving. Document for future reference?"
+
+**Options:**
+1. **Yes, add to project solutions** — Save to `solutions/`
+2. **Yes, add to global solutions** — Save to `~/.claude/solutions/`
+3. **No, proceed** — Skip capture
+
+### If User Says Yes
+
+Run the compound capture process from `reference/compound-protocol.md`:
+
+1. **Extract problem:** What symptoms, errors, unexpected behavior?
+2. **Extract investigation:** What approaches were tried? What worked?
+3. **Determine category:** build-error, test-failure, runtime-error, etc.
+4. **Generate document:** Create solution markdown file
+5. **Save to location:** Based on scope selection
+
+### Example Compound Output
+
+```markdown
+# TypeScript Path Alias Resolution
+
+> **Category:** build-error
+> **Created:** 2026-02-01
+> **Keywords:** typescript, path, alias, vite, imports
+
+## Symptoms
+- "Cannot find module '@/components/Button'"
+- Worked in IDE, failed at build
+
+## Solution
+Install vite-tsconfig-paths plugin...
+```
+
+---
+
+## Step 6: Stage and Review Changes
 
 ```bash
 git status
@@ -88,7 +145,7 @@ Review what will be committed. Ask user to confirm the scope is correct.
 
 ---
 
-## Step 6: Create Commit
+## Step 7: Create Commit
 
 Create a commit with a descriptive message:
 
@@ -106,7 +163,7 @@ If there are no changes to commit, skip this step and note "No changes to commit
 
 ---
 
-## Step 7: Final Summary
+## Step 8: Final Summary
 
 Output a handoff summary:
 

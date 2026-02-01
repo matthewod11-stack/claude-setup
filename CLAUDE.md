@@ -1,26 +1,37 @@
 # claude-setup
 
-Workflow system for Claude Code projects - from spec to implementation.
+Workflow skill system for Claude Code — from idea to implementation.
 
-## Session Management
+## Quick Start
 
-| Command | When to Use |
-|---------|-------------|
-| `/session-start` | Beginning of any work session |
-| `/session-end` | Before stopping work |
+```
+/plan-master          # Full interactive wizard (Steps 01-06)
+/session-start        # Begin work session
+/session-end          # End work session with commit
+```
+
+## Planning Skills
+
+| Command | Purpose |
+|---------|---------|
+| `/plan-master` | Master wizard — chains all planning steps with checkpoints |
+| `/spec-review-multi` | Spawns 4 parallel agents for multi-model spec review |
+| `/roadmap-with-validation` | Interactive scoping + multi-agent validation |
+
+## Session Skills
+
+| Command | Purpose |
+|---------|---------|
+| `/session-start` | Begin work — verify env, find next task |
+| `/session-end` | End work — commit, capture learnings |
 | `/checkpoint` | Mid-session state save |
+| `/compound` | Capture learnings to solutions library |
 
-## Workflow Skills (Planned)
+## Execution Skills
 
-| Command | Step | Purpose |
-|---------|------|---------|
-| `/spec-interview` | 01 | Interview to refine spec into buildable detail |
-| `/spec-review` | 02 | Multi-AI critique of spec |
-| `/consolidate-feedback` | 03 | Merge divergent AI feedback |
-| `/roadmap` | 04 | Interactive task breakdown → ROADMAP.md |
-| `/exec-setup` | 06 | Project scaffolding |
-
-See `00-WorkflowIndex.md` for the complete workflow decision tree.
+| Command | Purpose |
+|---------|---------|
+| `/orchestrate` | Coordinate 2+ parallel agents |
 
 ## Key Files
 
@@ -28,39 +39,26 @@ See `00-WorkflowIndex.md` for the complete workflow decision tree.
 |------|---------|
 | `PROGRESS.md` | Session work log |
 | `ROADMAP.md` | Task list (when created) |
-| `features.json` | Feature status tracking (optional) |
-| `00-WorkflowIndex.md` | Workflow navigation |
-
-## Reference Documents
-
-Located in `reference/`:
-- `session-*-protocol.md` — Source of truth for session skills
-- `boris-workflow.md` — Claude Code principles
-- `session-management.md` — Session continuity patterns
-- `parallel-build.md` — Multi-agent architecture
-
-## Making Skills Global
-
-After validating these skills work well, promote them to global availability:
-
-```bash
-mkdir -p ~/.claude/commands
-cp -r .claude/commands/* ~/.claude/commands/
-```
-
-This makes `/session-start`, `/session-end`, `/checkpoint` available in all projects.
-
-**Note:** New skills require restarting Claude Code to be discovered.
+| `features.json` | Feature tracking |
+| `solutions/` | Project learnings |
 
 ## Project Structure
 
 ```
 claude-setup/
-├── .claude/
-│   └── commands/            # Session management skills (slash commands)
-├── reference/               # Protocol source docs
-├── templates/               # Starter files for new projects
-├── 00-07-*.md              # Workflow step documentation
-├── PROGRESS.md             # Session log
-└── CLAUDE.md               # This file
+├── .claude/commands/     # Slash command skills
+├── reference/            # Protocol docs
+├── solutions/            # Solution templates
+├── archive/              # Old workflow docs
+└── 00-WorkflowIndex.md   # Navigation
+```
+
+## Install to Another Machine
+
+```bash
+git clone https://github.com/YOUR_USERNAME/claude-setup.git
+cd claude-setup
+mkdir -p ~/.claude/commands ~/.claude/solutions
+cp -r .claude/commands/* ~/.claude/commands/
+# Restart Claude Code
 ```

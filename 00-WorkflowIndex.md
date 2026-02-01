@@ -1,6 +1,6 @@
 # Workflow Index
 
-> **Purpose:** Master navigation for the idea-to-implementation workflow system.
+> **Purpose:** Navigation guide for the Claude Code workflow skill system.
 
 ---
 
@@ -9,105 +9,161 @@
 ```
 What do you have?
     │
-    ├── Just an idea/PRD ─────────────▶ 01-PLAN-SpecInterview.md
-    ├── A detailed spec ──────────────▶ 02 (Full) or 04 (Lite)
-    ├── Multiple AI reviews ──────────▶ 03-PLAN-FeedbackConsolidation.md
-    ├── Spec + feedback ──────────────▶ 04-PLAN-ScopingAndRoadmap.md
-    ├── Roadmap, want validation ─────▶ 05-PLAN-RoadmapValidation.md (optional)
-    ├── Roadmap with exec mode ───────▶ 06-EXEC-Setup.md
-    └── Scaffolded, ready to build ───▶ 07-EXEC-RalphLoop.md
+    ├── Just an idea/PRD ─────────────▶ /plan-master
+    ├── A detailed spec ──────────────▶ /spec-review-multi (Full) or /roadmap-with-validation (Lite)
+    ├── Spec + feedback ──────────────▶ /roadmap-with-validation
+    ├── Validated roadmap ────────────▶ /plan-master (start at Step 06)
+    └── Scaffolded, ready to build ───▶ /orchestrate (parallel) or /session-start (sequential)
+```
+
+---
+
+## Master Orchestrator
+
+Use `/plan-master` to chain all planning steps with interactive checkpoints:
+
+```
+/plan-master
+    │
+    ├─► Step 01: Spec Interview (inline)
+    │   └─► Checkpoint: Review SPEC.md
+    │
+    ├─► Steps 02-03: /spec-review-multi (spawns 4 agents)
+    │   └─► Checkpoint: Review consolidated_feedback.md
+    │
+    ├─► Steps 04-05: /roadmap-with-validation (AskUserQuestion + 4 agents)
+    │   └─► Checkpoint: Review ROADMAP.md
+    │
+    └─► Step 06: Exec Setup (inline)
+        └─► Handoff to /orchestrate (parallel) or /session-start (sequential)
 ```
 
 ---
 
 ## Workflow Tiers
 
-### 🟢 Lite — `01 → 04 → 06 → 07`
+### Lite — `/plan-master --tier lite`
+
 Side projects, toys, prototypes. Skip multi-AI review and validation.
 
-**Signals:** Built similar before • No external APIs • Single domain • Explain in 2 min • Low stakes
+**Flow:** Spec Interview → Scoping/Roadmap → Setup → Build
 
-### 🔵 Full — `01 → 02 → 03 → 04 → 05 → 06 → 07`
+**Signals:** Built similar before • No external APIs • Single domain • Low stakes
+
+### Full — `/plan-master --tier full`
+
 Production apps, integrations, multi-domain complexity.
 
-**Signals:** External APIs • AI/LLM components • Multiple domains • Data that matters • Parallel likely
+**Flow:** Spec Interview → Multi-Agent Review → Consolidate → Scoping/Roadmap → Validation → Setup → Build
+
+**Signals:** External APIs • AI/LLM components • Multiple domains • Data that matters
 
 ### Quick Decision
 ```
-Real project with integrations or data that matters? → 🔵 Full
-Could rebuild in a weekend if it burned down? → 🟢 Lite
-Otherwise → 🔵 Full
+Could rebuild in a weekend if it burned down? → Lite
+Otherwise → Full
 ```
 
 ---
 
-## Workflow Flow
+## Skills Reference
 
-```
-PLANNING                                    EXECUTION
-────────────────────────────────────────    ──────────────────────────
+### Planning Skills
 
-01: Spec Interview ──▶ 02: Spec Review ──▶ 03: Consolidate
-                                                   │
-                                                   ▼
-                                           04: Scoping & Roadmap
-                                           ⭐ DECIDES: PAR vs SEQ
-                                                   │
-                                                   ▼
-                                           05: Validation (optional)
-                                                   │
-                                                   ▼
-                                           06: Execution Setup
-                                                   │
-                              ┌────────────────────┴────────────────────┐
-                              ▼                                         ▼
-                        SEQUENTIAL                                 PARALLEL
-                        1 Ralph Loop                              2+ Ralph Loops
-                        07-EXEC-RalphLoop                         07-EXEC-RalphLoop
-```
+| Skill | Purpose |
+|-------|---------|
+| `/plan-master` | Master wizard — chains all steps with checkpoints |
+| `/spec-review-multi` | Spawn 4 parallel review agents |
+| `/roadmap-with-validation` | Interactive scoping + validation |
+| `/compound` | Capture session learnings |
 
-**Meta-rule:** If parallelizable → parallel ralph loops. If not → sequential ralph loop.
+### Session Skills
 
----
+| Skill | Purpose |
+|-------|---------|
+| `/session-start` | Begin work session, find next task |
+| `/session-end` | End session, commit, document |
+| `/checkpoint` | Mid-session state save |
 
-## Steps Reference
+### Execution Skills
 
-| Step | File | Input → Output |
-|------|------|----------------|
-| 01 | [SpecInterview](01-PLAN-SpecInterview.md) | PRD → Detailed Spec |
-| 02 | [SpecReview](02-PLAN-SpecReview.md) | Spec → AI Reviews |
-| 03 | [FeedbackConsolidation](03-PLAN-FeedbackConsolidation.md) | Reviews → Consolidated Feedback |
-| 04 | [ScopingAndRoadmap](04-PLAN-ScopingAndRoadmap.md) | Spec + Feedback → ROADMAP.md |
-| 05 | [RoadmapValidation](05-PLAN-RoadmapValidation.md) | ROADMAP.md → Validated Roadmap *(optional)* |
-| 06 | [Setup](06-EXEC-Setup.md) | Roadmap → Scaffolded Project |
-| 07 | [RalphLoop](07-EXEC-RalphLoop.md) | Scaffolded Project → Completed Code |
-
-**Reference docs:** [parallel-build](reference/parallel-build.md) • [session-management](reference/session-management.md) • [setup](reference/setup.md)
+| Skill | Purpose |
+|-------|---------|
+| `/orchestrate` | Coordinate 2+ parallel agents |
+| `/ralph-loop` | Autonomous iteration loop |
 
 ---
 
-## Variables
+## Key Files Created
 
-Use consistently across prompts:
+| File | Created By | Purpose |
+|------|-----------|---------|
+| `SPEC.md` | /plan-master | Detailed specification |
+| `*_feedback.md` | /spec-review-multi | Model-specific reviews |
+| `consolidated_feedback.md` | /spec-review-multi | Merged feedback |
+| `ROADMAP.md` | /roadmap-with-validation | Implementation plan |
+| `v2_parking_lot.md` | /roadmap-with-validation | Deferred features |
+| `*_validation.md` | /roadmap-with-validation | Validation reviews |
+| `AGENT_BOUNDARIES.md` | /plan-master | Domain ownership (parallel) |
+| `features.json` | /plan-master | Feature tracking |
+| `PROGRESS.md` | /session-end | Session log |
+| `.claude/workflow-state.json` | /plan-master | Workflow state |
 
-| Variable | Example |
+---
+
+## Solutions Library
+
+Captured learnings for future reference:
+
+```
+~/.claude/solutions/          # Global (cross-project)
+├── universal/
+├── typescript/
+├── react/
+├── node/
+└── python/
+
+project/solutions/            # Project-specific
+├── build-errors/
+├── test-failures/
+├── runtime-errors/
+├── performance-issues/
+├── integration-issues/
+└── patterns/
+```
+
+**Capture:** `/compound` or `/session-end` (prompted after bug fixes)
+**Search:** Automatic in `/session-start`
+
+---
+
+## Reference Documents
+
+Located in `reference/`:
+
+| Document | Purpose |
 |----------|---------|
-| `[PROJECT_NAME]` | "HRSkills Desktop" |
-| `[V1_GOAL]` | "Track skills for 50 employees" |
-| `[TECH_STACK]` | "Next.js 14, Supabase, TypeScript" |
-| `[TARGET_USER]` | "Me (single user, no auth)" |
+| `plan-master-protocol.md` | Master orchestrator logic |
+| `multi-agent-review-protocol.md` | Parallel agent spawning |
+| `validation-protocol.md` | Roadmap stress-testing |
+| `compound-protocol.md` | Knowledge capture |
+| `session-start-protocol.md` | Session start steps |
+| `session-end-protocol.md` | Session end steps |
+| `boris-workflow.md` | Claude Code principles |
+| `parallel-build.md` | Multi-agent architecture |
 
 ---
 
-## Plugins
+## Archived Documentation
 
-| Command | Purpose |
-|---------|---------|
-| `/feature-dev` | Feature breakdown and architecture |
-| `/code-review` | Review completed work |
-| `/commit` | Commit changes |
-| `/ralph-loop` | Start autonomous execution loop |
+Original workflow step templates preserved in `archive/workflow-steps/`:
+- `01-PLAN-SpecInterview.md` through `07-EXEC-RalphLoop.md`
+
+Design documents in `archive/design-docs/`:
+- Multi-agent review and validation orchestrator designs
+
+These are now superseded by the skill system but kept for reference.
 
 ---
 
-*Version 5.0 | Consolidated from feedback review*
+*Version 7.0 | Skill-based workflow system*

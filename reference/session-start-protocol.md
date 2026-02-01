@@ -33,6 +33,49 @@ If it doesn't exist:
 
 ---
 
+## Step 2.5: Search Solutions Library
+
+Check for relevant prior learnings that might help with the current task.
+
+### Determine Search Keywords
+
+From the previous session's notes or current task:
+- Extract domain keywords (e.g., "auth", "database", "api")
+- Extract technology keywords (e.g., "typescript", "prisma", "react")
+- Extract problem types (e.g., "build", "test", "performance")
+
+### Search Project Solutions
+
+If `solutions/` directory exists:
+
+```bash
+grep -r -l "[keyword]" solutions/ 2>/dev/null | head -5
+```
+
+### Search Global Solutions
+
+```bash
+grep -r -l "[keyword]" ~/.claude/solutions/ 2>/dev/null | head -5
+```
+
+### If Matches Found
+
+Include in the session start summary:
+
+```
+**Relevant Prior Solutions:**
+- solutions/build-errors/typescript-path-aliases.md
+- ~/.claude/solutions/react/useeffect-cleanup.md
+```
+
+Brief summary of what each contains (read first few lines).
+
+### If No Matches
+
+Skip this section silently — don't mention if nothing found.
+
+---
+
 ## Step 3: Find Current Task
 
 Check if `ROADMAP.md` exists.
