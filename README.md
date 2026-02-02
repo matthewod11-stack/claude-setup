@@ -1,164 +1,124 @@
 # Claude Code Workflow Skills
 
-A complete skill system for Claude Code — from idea to working code with multi-agent review, validation, and session management.
+**From idea to working code** — a skill system for Claude Code with multi-agent review, validation, and session management.
 
-## Quick Install
+> "Give Claude a way to verify its work." — Boris Cherny
+
+---
+
+## What This Does
+
+1. **Planning** — Turn ideas into validated, executable roadmaps
+2. **Multi-Agent Review** — 4 AI models critique your spec (Claude, GPT-4, Grok, Gemini)
+3. **Session Management** — Start/end work sessions with context preservation
+4. **Knowledge Capture** — Document learnings for future lookup
+
+---
+
+## Install
 
 ```bash
-# Clone the repo
 git clone https://github.com/YOUR_USERNAME/claude-setup.git
 cd claude-setup
-
-# Install skills globally (available in all projects)
-mkdir -p ~/.claude/commands ~/.claude/solutions
-cp -r .claude/commands/* ~/.claude/commands/
-cp -r solutions/* ~/.claude/solutions/ 2>/dev/null || true
-
-# Restart Claude Code to discover new skills
+./install.sh
 ```
 
-## What You Get
+Then restart Claude Code.
 
-### Planning Skills
+---
 
-| Command | Purpose |
-|---------|---------|
-| `/plan-master` | **Master wizard** — chains all planning steps with checkpoints |
-| `/spec-review-multi` | Spawns 4 parallel agents for multi-model spec review |
-| `/roadmap-with-validation` | Interactive scoping + multi-agent roadmap validation |
+## Quick Start
 
-### Session Skills
-
-| Command | Purpose |
-|---------|---------|
-| `/session-start` | Begin work — verify env, review progress, find next task |
-| `/session-end` | End work — verify code, commit, capture learnings |
-| `/checkpoint` | Mid-session save without full shutdown |
-| `/compound` | Capture session learnings to solutions library |
-
-### Execution Skills
-
-| Command | Purpose |
-|---------|---------|
-| `/orchestrate` | Coordinate parallel agents (2+ terminals) |
-
-## Usage
-
-### New Project (Full Planning)
+### New Project
 
 ```
 /plan-master
 ```
 
-This wizard walks you through:
-1. **Spec Interview** — Turn your idea into detailed spec
-2. **Multi-Agent Review** — 4 AI models critique your spec
-3. **Consolidation** — Merge feedback with consensus tagging
-4. **Interactive Scoping** — Decide V1 vs V2 features
-5. **Validation** — Stress-test the roadmap
-6. **Setup** — Scaffold project for execution
+Walk through:
+1. Spec interview → `SPEC.md`
+2. Multi-agent review → `consolidated_feedback.md`
+3. Interactive scoping → `ROADMAP.md`
+4. Exec setup → Ready to build
 
-### Quick Project (Lite Planning)
-
-```
-/plan-master --tier lite
-```
-
-Skips multi-agent review and validation. Good for side projects.
-
-### Daily Work Sessions
+### Daily Work
 
 ```bash
-# Start of day
-/session-start
-
-# Work on tasks...
-
-# End of day
-/session-end
+/session-start    # Context + next task
+# ... work ...
+/session-end      # Commit + document
 ```
 
-### Parallel Builds (2+ Agents)
+---
 
-```bash
-# Terminal 1 (Orchestrator)
-/orchestrate
+## Skills
 
-# Follow prompts to generate agent prompts for Terminal 2 & 3
-```
+| Command | Purpose |
+|---------|---------|
+| `/plan-master` | Master planning wizard with checkpoints |
+| `/spec-review-multi` | 4-model parallel spec review |
+| `/roadmap-with-validation` | Scoping + validation |
+| `/session-start` | Begin work session |
+| `/session-end` | End with commit + capture |
+| `/checkpoint` | Mid-session save |
+| `/compound` | Capture learnings |
+| `/orchestrate` | Coordinate parallel agents |
 
-## Solutions Library
-
-Captured learnings for fast future lookup:
-
-```
-~/.claude/solutions/      # Global (all projects)
-├── typescript/
-├── react/
-├── node/
-└── universal/
-
-project/solutions/        # Project-specific
-├── build-errors/
-├── test-failures/
-└── patterns/
-```
-
-Automatically searched by `/session-start`. Prompted for capture by `/session-end`.
-
-## File Structure
-
-```
-claude-setup/
-├── .claude/commands/     # Slash command skills
-│   ├── plan-master.md
-│   ├── spec-review-multi.md
-│   ├── roadmap-with-validation.md
-│   ├── compound.md
-│   ├── session-start.md
-│   ├── session-end.md
-│   └── checkpoint.md
-├── reference/            # Protocol source docs
-├── solutions/            # Solution templates
-├── templates/            # Starter files
-├── archive/              # Old workflow docs (reference only)
-└── 00-WorkflowIndex.md   # Navigation guide
-```
-
-## Updating on Another Machine
-
-```bash
-cd claude-setup
-git pull
-
-# Re-apply skills
-cp -r .claude/commands/* ~/.claude/commands/
-
-# Restart Claude Code
-```
+---
 
 ## Workflow Tiers
 
 | Tier | Flow | Best For |
 |------|------|----------|
-| **Lite** | Spec → Roadmap → Build | Side projects, prototypes |
-| **Full** | Spec → Review → Consolidate → Roadmap → Validate → Build | Production apps, integrations |
+| **Lite** | Spec → Roadmap → Build | Side projects |
+| **Full** | Spec → Review → Roadmap → Validate → Build | Production |
 
-**Rule of thumb:** Could rebuild in a weekend if it burned down? → Lite. Otherwise → Full.
+**Rule of thumb:** Could rebuild in a weekend? → Lite. Otherwise → Full.
+
+---
 
 ## Key Concepts
 
-- **Checkpoints** — Every major step pauses for review before continuing
-- **Multi-Agent Review** — 4 models (Claude, GPT-4, Grok, Gemini) for diverse perspectives
-- **Consensus Tagging** — Items flagged by 2+ models marked with 🔺
-- **Parallel Execution** — Independent domains can run in separate terminals
-- **Solutions Library** — First-time problem (30 min) → future lookup (minutes)
+- **Checkpoints** — Pause for review at each step
+- **Consensus Tagging** — Items flagged by 2+ models get 🔺
+- **Solutions Library** — First debug (30 min) → future lookup (seconds)
+- **Parallel Execution** — Independent domains in separate terminals
+
+---
+
+## Documentation
+
+- [Philosophy](docs/PHILOSOPHY.md) — Why this approach works
+- [Skills Reference](docs/SKILLS.md) — Detailed skill documentation
+- [Reference Protocols](reference/) — Implementation details
+
+---
+
+## File Structure
+
+```
+~/.claude/
+├── commands/         # Skills (installed by install.sh)
+├── reference/        # Protocol documentation
+└── solutions/        # Global learnings library
+
+project/
+├── SPEC.md           # Specification
+├── ROADMAP.md        # Implementation plan
+├── PROGRESS.md       # Session log
+├── features.json     # Feature tracking
+└── solutions/        # Project learnings
+```
+
+---
 
 ## Credits
 
-- **Boris Cherny** — Creator of Claude Code. "Give Claude a way to verify its work."
-- **Thariq** — Spec interview pattern using `AskUserQuestion`
-- **Ralph Wiggum Plugin** — Autonomous execution loops
+- **Boris Cherny** — Claude Code creator, verification philosophy
+- **Thariq** — Spec interview pattern
+- **Ralph Wiggum Plugin** — Autonomous loops
+
+---
 
 ## License
 
