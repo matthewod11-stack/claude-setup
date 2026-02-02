@@ -114,9 +114,10 @@ project/
 
 ## Credits
 
-- **Boris Cherny** — Claude Code creator, verification philosophy
-- **Thariq** — Spec interview pattern
-- **Ralph Wiggum Plugin** — Autonomous loops
+- **Boris Cherny** — Claude Code creator, verification philosophy ([tips](reference/source-boris-twitter-thread.md))
+- **Every.to** — Compound engineering methodology, solutions library concept ([source](reference/source-every-compound-engineering.md))
+- **Steve Jobs** — Design questions baked into agent reviews ([prompts](reference/source-steve-jobs-design.md))
+- **Thariq** — Spec interview pattern using `AskUserQuestion`
 
 ---
 

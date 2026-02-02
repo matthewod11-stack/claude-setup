@@ -93,8 +93,9 @@ This creates a continuous narrative across work sessions.
 ## Sources
 
 - **Boris Cherny** — Claude Code creator, verification philosophy
+- **Every.to** — Compound engineering methodology, solutions library concept
+- **Steve Jobs** — Design questions integrated into multi-agent reviews
 - **Thariq** — Spec interview pattern using `AskUserQuestion`
-- **Ralph Wiggum Plugin** — Autonomous execution loops
 
 ---
 
