@@ -1,34 +1,40 @@
----
-description: Orchestrate multi-model spec review - spawns 4 parallel agents, consolidates feedback
----
-
 # Multi-Agent Review Protocol
 
-> **Purpose:** Define the orchestration logic for parallel multi-model reviews
-> **Used By:** `/spec-review-multi`, `/roadmap-with-validation`
+> **Purpose:** Define the orchestration logic for parallel multi-model reviews using real external CLIs
+> **Used By:** `/spec-review-multi`, `/multi-model-launch`, `/roadmap-with-validation`
 
 ---
 
 ## Overview
 
-Multi-agent review spawns parallel agents to review documents from different perspectives. Each agent receives a model-specific prompt emphasizing that model's strengths.
+Multi-agent review launches **real external AI CLIs** (Codex, Gemini, Cursor-Agent) in parallel with an in-session Claude review. Each model reviews from its strength perspective, then results are consolidated with consensus/divergence detection.
+
+**Key Change (v2.0):** Replaced fake "Claude-pretending-to-be-other-models" with actual CLI invocations.
 
 ---
 
-## Agent Configuration
+## Model Configuration
 
-### Default Models
+### Active Models
 
-| Model | Filename Suffix | Strengths |
-|-------|----------------|-----------|
-| Claude | `claude_*.md` | Edge cases, security, architectural coherence |
-| GPT-4 | `gpt4_*.md` | Implementation feasibility, API design |
-| Grok | `grok_*.md` | Unconventional approaches, simplification |
-| Gemini | `gemini_*.md` | Industry patterns, breadth, documentation |
+| Model | CLI Command | Focus Areas |
+|-------|-------------|-------------|
+| **Claude** | In-session | Edge cases, security, architectural coherence |
+| **Codex** | `codex exec` | Implementation feasibility, API design, DX |
+| **Gemini** | `gemini --yolo` | Industry patterns, breadth, documentation |
+| **Cursor** | `cursor-agent --print` | Code architecture, file structure, modules |
+
+### CLI Locations
+
+```bash
+CODEX_BIN="$(which codex)"          # Usually ~/.nvm/.../bin/codex
+GEMINI_BIN="$(which gemini)"        # Usually ~/.nvm/.../bin/gemini
+CURSOR_BIN="$(which cursor-agent)"  # Usually ~/.local/bin/cursor-agent
+```
 
 ### Model-Specific Focus Areas
 
-**Claude:**
+**Claude (In-Session):**
 ```
 Focus especially on:
 - Edge cases and failure modes
@@ -38,7 +44,7 @@ Focus especially on:
 - Subtle logical errors
 ```
 
-**GPT-4:**
+**Codex (GPT/OpenAI):**
 ```
 Focus especially on:
 - Implementation feasibility
@@ -48,17 +54,7 @@ Focus especially on:
 - Practical tradeoffs
 ```
 
-**Grok:**
-```
-Focus especially on:
-- Unconventional approaches
-- Simplification opportunities
-- What's over-engineered
-- Bold suggestions
-- Contrarian perspectives
-```
-
-**Gemini:**
+**Gemini (Google):**
 ```
 Focus especially on:
 - Industry patterns and alternatives
@@ -68,79 +64,143 @@ Focus especially on:
 - Cross-domain insights
 ```
 
+**Cursor-Agent:**
+```
+Focus especially on:
+- File and folder structure recommendations
+- Module boundaries and organization
+- How this would be navigated in an IDE
+- Import/export patterns
+- Where code should actually live
+```
+
+---
+
+## Architecture
+
+### File Structure
+
+```
+~/.claude/
+├── scripts/
+│   ├── multi-model-review.sh        # Main orchestrator
+│   ├── lib/
+│   │   └── cli-wrappers.sh          # Per-model launch functions
+│   └── templates/
+│       ├── codex-review-prompt.txt
+│       ├── gemini-review-prompt.txt
+│       └── cursor-review-prompt.txt
+├── commands/
+│   ├── multi-model-launch.md        # Launcher skill
+│   └── spec-review-multi.md         # Full review skill
+├── reference/
+│   └── multi-agent-review-protocol.md  # This file
+└── reviews/
+    └── reviews-YYYY-MM-DD-HHMM/     # Output directories
+        ├── manifest.json
+        ├── claude_feedback.md
+        ├── codex_feedback.md
+        ├── gemini_feedback.md
+        ├── cursor_feedback.md
+        └── consolidated_feedback.md
+```
+
+### Execution Flow
+
+```
+User: /spec-review-multi specs/my-feature.md
+
+1. Create: ~/.claude/reviews/reviews-2026-02-01-1630/
+2. Launch in parallel:
+   │
+   ├── [Background] codex exec  → codex_feedback.md
+   ├── [Background] gemini      → gemini_feedback.md
+   ├── [Background] cursor      → cursor_feedback.md
+   │
+   └── [In-session] Claude reviews → claude_feedback.md
+       (edge cases, security, architecture)
+
+3. Monitor: Poll every 30s, show progress
+4. Consolidate: Apply consensus/divergence logic (4 sources)
+5. Output: consolidated_feedback.md
+```
+
 ---
 
 ## Spawning Pattern
 
-### Parallel Spawn
+### External CLIs (Background Processes)
 
-All agents should be spawned in a SINGLE message with multiple Task tool calls.
+The orchestrator script launches all CLIs with appropriate flags:
 
-```
-Task tool call 1:
-- subagent_type: "general-purpose"
-- description: "Claude spec review"
-- prompt: [Full prompt with Claude focus]
+```bash
+# Codex - uses exec mode with full-auto
+codex exec --full-auto -o "$OUTPUT_FILE" "$PROMPT"
 
-Task tool call 2:
-- subagent_type: "general-purpose"
-- description: "GPT-4 spec review"
-- prompt: [Full prompt with GPT-4 focus]
+# Gemini - uses yolo mode for auto-approval
+gemini --yolo "$PROMPT" > "$OUTPUT_FILE"
 
-Task tool call 3:
-- subagent_type: "general-purpose"
-- description: "Grok spec review"
-- prompt: [Full prompt with Grok focus]
-
-Task tool call 4:
-- subagent_type: "general-purpose"
-- description: "Gemini spec review"
-- prompt: [Full prompt with Gemini focus]
+# Cursor - uses print mode for non-interactive
+cursor-agent --print --output-format text "$PROMPT" > "$OUTPUT_FILE"
 ```
 
-### Prompt Template
+### Claude (In-Session)
 
-Each agent prompt includes:
+Claude performs its review while external CLIs work, maximizing parallelism:
 
-1. **Role definition**
-2. **Document to review** (full content)
-3. **Review instructions** (from template)
-4. **Model-specific focus areas**
-5. **Output filename instruction**
+1. Read spec file content
+2. Apply Claude-specific review prompt
+3. Write output to `claude_feedback.md`
+4. Continue monitoring external progress
 
 ---
 
 ## Monitoring Strategy
 
-### File Polling
+### Sentinel Files
 
-Check for output files every 30 seconds:
+Each CLI wrapper creates a `.done` sentinel file on completion:
 
 ```bash
-# Count completed reviews
-ls -la *_feedback.md 2>/dev/null | wc -l
-ls -la *_validation.md 2>/dev/null | wc -l
+# Success
+echo "success" > "${OUTPUT_FILE}.done"
+
+# Failure
+echo "error:$EXIT_CODE" > "${OUTPUT_FILE}.done"
 ```
 
-### Progress Reporting
+### Progress Polling
 
-Report to user periodically:
+Check every 30 seconds:
+
+```bash
+# Count completed
+ls -la ~/.claude/reviews/reviews-*/*.done 2>/dev/null | wc -l
+
+# Check status
+cat ~/.claude/reviews/reviews-*/*.done
+```
+
+### Progress Report Format
 
 ```
 Review Progress:
-- Claude:  ✓ Complete
-- GPT-4:   ⏳ Working (5 min)
-- Grok:    ⏳ Working (3 min)
-- Gemini:  ✗ Not started
+- Claude:  ✓ Complete (in-session)
+- Codex:   ⏳ Working (5 min)
+- Gemini:  ✓ Complete
+- Cursor:  ✗ Failed (error:1)
 
-Files found: 1/4
+Files found: 2/4
 ```
 
 ### Timeout Configuration
 
-- **Per-agent timeout:** 15 minutes
-- **Total timeout:** 20 minutes
-- **Check interval:** 30 seconds
+| Setting | Value |
+|---------|-------|
+| Per-model timeout | 15 minutes |
+| Total timeout | 20 minutes |
+| Poll interval | 30 seconds |
+| Minimum for consensus | 2 reviews |
 
 ---
 
@@ -152,14 +212,14 @@ Proceed immediately to consolidation.
 
 ### Partial Completion (2-3/4)
 
-After timeout:
+After timeout, offer options:
 ```
-3/4 reviews complete. Grok timed out.
+3/4 reviews complete. Codex timed out.
 
 Options:
 A) Proceed with 3 reviews (sufficient for consensus detection)
-B) Wait 5 more minutes for Grok
-C) Retry Grok agent
+B) Wait 5 more minutes
+C) Retry failed CLI
 ```
 
 ### Minimal Completion (1/4)
@@ -169,7 +229,7 @@ Only 1/4 reviews complete.
 
 Options:
 A) Proceed with single review (no consensus possible)
-B) Wait longer (extend timeout by 10 min)
+B) Wait longer
 C) Abort and try manual review
 ```
 
@@ -178,15 +238,15 @@ C) Abort and try manual review
 ```
 No reviews completed within timeout.
 
-This might indicate:
-- Model API issues
+Possible causes:
+- CLI authentication issues
+- Network problems
 - Prompt too large
-- System resource constraints
 
 Options:
-A) Retry with fresh agents
-B) Fall back to manual review instructions
-C) Check logs for errors
+A) Retry with fresh processes
+B) Generate prompt pack for manual execution
+C) Fall back to Claude-only review
 ```
 
 ---
@@ -199,11 +259,11 @@ Every point must be tagged with source model(s):
 
 ```markdown
 - [Point] — [Claude]
-- [Point] — [GPT-4, Grok]
-- [Point] — [Claude, GPT-4, Grok, Gemini]
+- [Point] — [Codex, Gemini]
+- [Point] — [Claude, Codex, Gemini, Cursor]
 ```
 
-### Consensus Detection
+### Consensus Detection (🔺)
 
 **Definition:** Item raised by 2+ models (even if worded differently)
 
@@ -218,17 +278,15 @@ Every point must be tagged with source model(s):
 - "Missing dependency" ≈ "Order unclear"
 - "Too complex" ≈ "Should simplify"
 
-### Divergence Detection
+### Divergence Detection (⚠️)
 
 **Definition:** Models explicitly disagree on approach
-
-**Tagging:** ⚠️ DIVERGENT
 
 **Format:**
 ```markdown
 ⚠️ DIVERGENT: [Topic]
-- [Position A] — Claude, GPT-4
-- [Position B] — Grok, Gemini
+- [Position A] — Claude, Codex
+- [Position B] — Gemini, Cursor
 - **Resolution needed:** [What decision is required]
 ```
 
@@ -236,13 +294,14 @@ Every point must be tagged with source model(s):
 
 ## Output Format
 
-### Consolidated Feedback (Spec Review)
+### Consolidated Feedback
 
 ```markdown
 # Consolidated Spec Feedback — [PROJECT_NAME]
 
-**Sources:** claude_feedback.md, gpt4_feedback.md, grok_feedback.md, gemini_feedback.md
+**Sources:** claude_feedback.md, codex_feedback.md, gemini_feedback.md, cursor_feedback.md
 **Date:** [DATE]
+**Review Duration:** [X minutes]
 
 ---
 
@@ -250,28 +309,25 @@ Every point must be tagged with source model(s):
 
 🔺 Items flagged by 2+ reviewers:
 
-1. [Issue] — Claude, GPT-4, Grok
-2. [Issue] — Claude, Gemini
+1. [Issue] — Claude, Codex, Gemini
+2. [Issue] — Claude, Cursor
 3. [Issue] — All 4 models
 
 ---
 
-## By Section
+## By Category
 
-### 1. Structure & Detail Assessment
-[Points with attribution]
+### Implementation Feasibility (Codex Lead)
+[Points with validation from others]
 
-### 2. Existing Feature Enhancement
-[Points with attribution]
+### Architecture & Structure (Cursor Lead)
+[Points with validation from others]
 
-### 3. New Ideas
-[Points with attribution]
+### Security & Edge Cases (Claude Lead)
+[Points]
 
-### 4. Jobs Innovation Lens
-[Points with attribution]
-
-### 5. Technical Considerations
-[Points with attribution]
+### Patterns & Breadth (Gemini Lead)
+[Points with validation from others]
 
 ---
 
@@ -283,62 +339,34 @@ Every point must be tagged with source model(s):
 
 ## Appendix: Full Reviews
 
-### Claude
+### Claude (In-Session)
 [Full content]
 
-### GPT-4
+### Codex (CLI)
 [Full content]
 
-### Grok
+### Gemini (CLI)
 [Full content]
 
-### Gemini
+### Cursor (CLI)
 [Full content]
 ```
 
-### Consolidated Validation (Roadmap)
+### Manifest File (JSON)
 
-```markdown
-# Roadmap Validation — [PROJECT_NAME]
-
-**Verdict:** [APPROVED / APPROVED WITH CHANGES / NEEDS REVISION]
-**Sources:** claude_validation.md, gpt4_validation.md, grok_validation.md, gemini_validation.md
-**Date:** [DATE]
-
----
-
-## Consensus Summary
-
-🔺 High-priority items (2+ validators):
-
-1. [Issue] — Claude, GPT-4, Grok
-2. [Issue] — Claude, Gemini
-
----
-
-## Required Changes
-
-### Critical (Must Fix)
-- [ ] [Change] — Flagged by: [Models]
-
-### Important (Should Fix)
-- [ ] [Change] — Flagged by: [Models]
-
-### Suggestions (Nice to Have)
-- [ ] [Change] — Flagged by: [Models]
-
----
-
-## Risks Identified
-
-| Risk | Severity | Flagged By | Mitigation |
-|------|----------|------------|------------|
-
----
-
-## Divergent Opinions
-
-[Any ⚠️ DIVERGENT items with resolution guidance]
+```json
+{
+  "timestamp": "2026-02-01T16:30:00-08:00",
+  "spec_file": "/path/to/spec.md",
+  "output_dir": "~/.claude/reviews/reviews-2026-02-01-1630",
+  "duration_seconds": 423,
+  "reviewers": [
+    {"name": "claude", "output": "claude_feedback.md", "status": "success"},
+    {"name": "codex", "output": "codex_feedback.md", "status": "success"},
+    {"name": "gemini", "output": "gemini_feedback.md", "status": "success"},
+    {"name": "cursor", "output": "cursor_feedback.md", "status": "error:1"}
+  ]
+}
 ```
 
 ---
@@ -348,10 +376,10 @@ Every point must be tagged with source model(s):
 ### Pre-Consolidation Checks
 
 For each feedback file, verify:
-- [ ] File exists and has content
+- [ ] File exists and has content (> 100 bytes)
 - [ ] Contains expected section headers
 - [ ] Has substantive content (not just headers)
-- [ ] Follows output format
+- [ ] Follows expected output format
 
 ### Post-Consolidation Checks
 
@@ -365,15 +393,28 @@ For each feedback file, verify:
 
 ## Error Handling
 
-### Agent Spawn Failure
+### CLI Not Found
 
 ```
-Failed to spawn [Model] agent.
+✗ codex CLI not found
 
 Options:
-A) Continue without [Model]
-B) Retry spawn
-C) Use different model configuration
+A) Install: npm install -g @openai/codex
+B) Proceed without Codex (3 reviewers)
+C) Generate prompt for manual execution
+```
+
+### CLI Authentication Failure
+
+```
+✗ gemini authentication failed
+
+The CLI may need re-authentication:
+  gemini login
+
+Options:
+A) Skip Gemini for now
+B) Wait while you authenticate
 ```
 
 ### Output File Corruption
@@ -383,21 +424,34 @@ C) Use different model configuration
 
 Options:
 A) Exclude from consolidation
-B) Request agent retry
+B) Request retry
 C) Include partial content with warning
-```
-
-### Consolidation Failure
-
-```
-Consolidation failed: [reason]
-
-Manual consolidation instructions:
-1. Read all feedback files
-2. Identify overlapping concerns
-3. Create consolidated document using template
 ```
 
 ---
 
-*Protocol version: 1.0 | Created: 2026-02-01*
+## Fallback: Prompt Pack
+
+If CLIs aren't working, generate copy-paste commands:
+
+```bash
+# Save prompts to files
+cat > /tmp/codex_prompt.txt << 'EOF'
+[Full prompt here]
+EOF
+
+# Terminal 1 - Codex:
+codex exec --full-auto -o codex_feedback.md "$(cat /tmp/codex_prompt.txt)"
+
+# Terminal 2 - Gemini:
+gemini --yolo "$(cat /tmp/gemini_prompt.txt)" > gemini_feedback.md
+
+# Terminal 3 - Cursor:
+cursor-agent --print --output-format text "$(cat /tmp/cursor_prompt.txt)" > cursor_feedback.md
+```
+
+---
+
+*Protocol version: 2.0 | Updated: 2026-02-01*
+*v1.0: Fake Claude subagents pretending to be other models*
+*v2.0: Real CLI invocations with actual model diversity*

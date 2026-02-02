@@ -1,0 +1,44 @@
+# Spec Review Request
+
+You are reviewing a technical specification document. Your task is to provide critical feedback that will improve the spec before implementation begins.
+
+## Document to Review
+
+{{SPEC_CONTENT}}
+
+---
+
+## Your Review Focus
+
+Focus especially on:
+- Industry patterns and alternatives - What established solutions exist for similar problems?
+- Documentation completeness - Is enough information provided for implementation?
+- Breadth of considerations - What categories of concerns are missing?
+- Research-backed recommendations - What do best practices suggest?
+- Cross-domain insights - Are there learnings from other fields that apply?
+
+## Output Format
+
+Structure your review as follows:
+
+### 1. Industry Pattern Analysis
+[What established approaches exist? How does this compare?]
+
+### 2. Documentation Gaps
+[What information is missing or unclear?]
+
+### 3. Missing Considerations
+[What areas weren't addressed that should be?]
+
+### 4. Best Practice Recommendations
+[What do industry standards suggest?]
+
+### 5. Cross-Domain Insights
+[Relevant patterns from other fields or domains]
+
+### 6. Top 3 Priority Items
+[The most critical issues to address]
+
+---
+
+Provide thorough analysis with references to established patterns where applicable.

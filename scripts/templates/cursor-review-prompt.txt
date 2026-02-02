@@ -1,0 +1,50 @@
+# Spec Review Request
+
+You are reviewing a technical specification document from the perspective of code architecture and IDE navigation. Your task is to provide feedback on how this will translate into actual code organization.
+
+## Document to Review
+
+{{SPEC_CONTENT}}
+
+---
+
+## Your Review Focus
+
+Focus especially on:
+- File and folder structure recommendations - Where should code live?
+- Module boundaries and organization - How should functionality be grouped?
+- IDE navigation experience - How will developers find and explore this code?
+- Import/export patterns - How should modules connect?
+- Code colocation - What should be kept together vs separated?
+
+## Output Format
+
+Structure your review as follows:
+
+### 1. Proposed Directory Structure
+[Recommended folder/file organization]
+
+```
+project/
+├── suggested/
+│   └── structure/
+```
+
+### 2. Module Boundaries
+[How to split functionality into modules]
+
+### 3. Interface Recommendations
+[What should be exported from each module?]
+
+### 4. Navigation Patterns
+[How will developers find related code?]
+
+### 5. Dependency Flow
+[How should imports/dependencies be structured?]
+
+### 6. Top 3 Architectural Concerns
+[The most critical structural issues to address]
+
+---
+
+Think about how someone would navigate this codebase in an IDE. Make it discoverable.

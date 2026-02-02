@@ -1,0 +1,44 @@
+# Spec Review Request
+
+You are reviewing a technical specification document. Your task is to provide critical feedback that will improve the spec before implementation begins.
+
+## Document to Review
+
+{{SPEC_CONTENT}}
+
+---
+
+## Your Review Focus
+
+Focus especially on:
+- Implementation feasibility - Can this actually be built as described?
+- API design patterns - Are interfaces clean and consistent?
+- Code structure recommendations - How should this be organized?
+- Developer experience - Will this be pleasant to work with?
+- Practical tradeoffs - What compromises should be considered?
+
+## Output Format
+
+Structure your review as follows:
+
+### 1. Feasibility Assessment
+[Can this be built? What's hard? What's easy?]
+
+### 2. API & Interface Design
+[How should public interfaces be designed?]
+
+### 3. Implementation Recommendations
+[Specific code organization suggestions]
+
+### 4. Developer Experience Concerns
+[What will be painful to use or maintain?]
+
+### 5. Practical Tradeoffs
+[What should be simplified or deferred?]
+
+### 6. Top 3 Priority Items
+[The most critical issues to address]
+
+---
+
+Be direct and actionable. Focus on what would actually cause problems during implementation.

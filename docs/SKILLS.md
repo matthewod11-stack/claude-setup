@@ -48,18 +48,44 @@ What do you have?
 
 ### `/spec-review-multi`
 
-Spawns 4 parallel agents for multi-model spec review.
+Launches **real external AI CLIs** for multi-model spec review.
 
-**Models:** Claude, GPT-4, Grok, Gemini
+**Models (with CLIs installed):**
+
+| Model | CLI | Focus Areas |
+|-------|-----|-------------|
+| **Claude** | In-session | Edge cases, security, architecture |
+| **Codex** | `codex exec` | Feasibility, API design, DX |
+| **Gemini** | `gemini --yolo` | Patterns, breadth, documentation |
+| **Cursor** | `cursor-agent --print` | File structure, modules |
+
+**Execution Flow:**
+```
+/spec-review-multi path/to/SPEC.md
+    │
+    ├── [Background] codex exec  → codex_feedback.md
+    ├── [Background] gemini      → gemini_feedback.md
+    ├── [Background] cursor      → cursor_feedback.md
+    │
+    └── [In-session] Claude      → claude_feedback.md
+
+    → consolidated_feedback.md
+```
 
 **Output:**
-- `claude_feedback.md`
-- `gpt4_feedback.md`
-- `grok_feedback.md`
-- `gemini_feedback.md`
-- `consolidated_feedback.md`
+- `claude_feedback.md` — In-session review
+- `codex_feedback.md` — OpenAI/GPT review
+- `gemini_feedback.md` — Google review
+- `cursor_feedback.md` — Cursor-Agent review
+- `consolidated_feedback.md` — Merged with consensus/divergence
 
 **Consensus:** Items flagged by 2+ models marked with 🔺
+
+**Divergence:** Models disagree marked with ⚠️
+
+**Fallback:** Without external CLIs, uses Claude-only review.
+
+**Setup:** See [Multi-Model Setup](MULTI-MODEL-SETUP.md) to install CLIs.
 
 ---
 
@@ -159,6 +185,25 @@ Coordinate 2+ parallel agents (multi-terminal).
 - Generate agent-specific prompts
 - Track phase transitions
 - Coordinate integration points
+
+---
+
+## Orchestrator Script
+
+The multi-model review uses a bash orchestrator script:
+
+```bash
+# Check available CLIs and models
+~/.claude/scripts/multi-model-review.sh --models
+
+# Dry run (preview without executing)
+~/.claude/scripts/multi-model-review.sh --dry-run path/to/spec.md
+
+# Run review
+~/.claude/scripts/multi-model-review.sh path/to/spec.md
+```
+
+**Output Directory:** `~/.claude/reviews/reviews-YYYY-MM-DD-HHMM/`
 
 ---
 
