@@ -1,3 +1,7 @@
+---
+description: End a work session - verify code, update tracking, commit changes
+---
+
 # Session End Protocol
 
 > **Purpose:** Properly close a work session with documentation and clean handoff

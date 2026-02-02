@@ -1,3 +1,7 @@
+---
+description: Start a work session - verify env, review progress, find next task
+---
+
 # Session Start Protocol
 
 > **Purpose:** Establish context at the beginning of a work session

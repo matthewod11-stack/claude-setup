@@ -1,3 +1,7 @@
+---
+description: Capture session learnings as searchable solution documents
+---
+
 # Compound Knowledge Capture Protocol
 
 > **Purpose:** Extract reusable learnings from debugging sessions and significant problem-solving work.

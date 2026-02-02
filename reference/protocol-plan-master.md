@@ -1,3 +1,7 @@
+---
+description: Master planning wizard - chains Steps 01-06 into interactive workflow with checkpoints
+---
+
 # Plan Master Protocol
 
 > **Purpose:** Define the orchestration logic for the `/plan-master` skill

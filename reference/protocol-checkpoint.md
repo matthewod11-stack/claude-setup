@@ -1,3 +1,7 @@
+---
+description: Mid-session save - preserve state without full shutdown
+---
+
 # Checkpoint Protocol
 
 > **Purpose:** Mid-session save without full shutdown - preserve state for potential interruption

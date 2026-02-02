@@ -1,3 +1,7 @@
+---
+description: Orchestrate multi-model spec review - spawns 4 parallel agents, consolidates feedback
+---
+
 # Multi-Agent Review Protocol
 
 > **Purpose:** Define the orchestration logic for parallel multi-model reviews

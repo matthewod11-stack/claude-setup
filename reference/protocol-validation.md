@@ -1,3 +1,7 @@
+---
+description: Interactive scoping, roadmap generation, and multi-agent validation
+---
+
 # Validation Protocol
 
 > **Purpose:** Define the roadmap validation process for Step 05
