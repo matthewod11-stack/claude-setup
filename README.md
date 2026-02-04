@@ -18,7 +18,7 @@
 ## Install
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/claude-setup.git
+git clone https://github.com/matthewod11-stack/claude-setup.git
 cd claude-setup
 ./install.sh
 ```
