@@ -13,7 +13,7 @@ What do you have?
     ├── A detailed spec ───────────▶ /plan-master (start at step 02)
     ├── Spec + feedback ───────────▶ /roadmap-with-validation
     ├── Validated roadmap ─────────▶ /session-start
-    └── Ready to build ────────────▶ /session-start or /orchestrate
+    └── Ready to build ────────────▶ /session-start
 ```
 
 ---
@@ -37,7 +37,7 @@ What do you have?
     │   └─► Checkpoint: Review ROADMAP.md
     │
     └─► Step 06: Exec Setup
-        └─► Handoff to /orchestrate or /session-start
+        └─► Handoff to /session-start
 ```
 
 **Tiers:**
@@ -167,24 +167,6 @@ Capture session learnings as searchable solution documents.
 **Locations:**
 - Project: `solutions/[category]/[slug].md`
 - Global: `~/.claude/solutions/[tech]/[slug].md`
-
----
-
-## Execution Skills
-
-### `/orchestrate`
-
-Coordinate 2+ parallel agents (multi-terminal).
-
-**Setup:**
-- Terminal 1: Orchestrator (dev server)
-- Terminal 2: Agent A
-- Terminal 3: Agent B
-
-**Features:**
-- Generate agent-specific prompts
-- Track phase transitions
-- Coordinate integration points
 
 ---
 
