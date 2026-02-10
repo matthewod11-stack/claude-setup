@@ -13,11 +13,23 @@
 3. **Session Management** — Start/end work sessions with context preservation
 4. **Knowledge Capture** — Document learnings for future lookup
 
-This is the **public, shareable** skill system. It installs into your existing `~/.claude/` directory alongside any personal configuration you already have. If you maintain a private `~/.claude/` config (synced across machines, domain-specific tools, etc.), these skills merge cleanly alongside it.
+This is the **public, shareable** skill system. It installs into your existing Claude Code setup alongside any personal configuration you already have.
 
 ---
 
 ## Install
+
+### Plugin (Recommended)
+
+From any Claude Code session:
+
+```
+/plugin marketplace add matthewod11-stack/claude-setup
+```
+
+This installs the skills as a plugin — no manual file copying needed.
+
+### Legacy (install.sh)
 
 ```bash
 git clone https://github.com/matthewod11-stack/claude-setup.git
@@ -51,10 +63,10 @@ See [Multi-Model Setup](docs/MULTI-MODEL-SETUP.md) for details.
 ```
 
 Walk through:
-1. Spec interview → `SPEC.md`
-2. Multi-model review → `consolidated_feedback.md`
-3. Interactive scoping → `ROADMAP.md`
-4. Exec setup → Ready to build
+1. Spec interview -> `SPEC.md`
+2. Multi-model review -> `consolidated_feedback.md`
+3. Interactive scoping -> `ROADMAP.md`
+4. Exec setup -> Ready to build
 
 ### Daily Work
 
@@ -68,7 +80,7 @@ Walk through:
 
 ## Skills
 
-7 skills installed to `~/.claude/commands/`:
+7 skills available via `/command` in Claude Code:
 
 | Command | Purpose |
 |---------|---------|
@@ -80,7 +92,7 @@ Walk through:
 | `/checkpoint` | Mid-session save |
 | `/compound` | Capture learnings |
 
-Each skill is sourced from a protocol file in `reference/` — edit the protocol to customize the skill behavior.
+Each skill is defined in `skills/<name>/SKILL.md` with YAML frontmatter specifying metadata and tool permissions.
 
 ---
 
@@ -105,10 +117,10 @@ The `/spec-review-multi` skill launches **real external AI CLIs** for genuine di
 
 | Tier | Flow | Best For |
 |------|------|----------|
-| **Lite** | Spec → Roadmap → Build | Side projects |
-| **Full** | Spec → Review → Roadmap → Validate → Build | Production |
+| **Lite** | Spec -> Roadmap -> Build | Side projects |
+| **Full** | Spec -> Review -> Roadmap -> Validate -> Build | Production |
 
-**Rule of thumb:** Could rebuild in a weekend? → Lite. Otherwise → Full.
+**Rule of thumb:** Could rebuild in a weekend? -> Lite. Otherwise -> Full.
 
 ---
 
@@ -116,7 +128,7 @@ The `/spec-review-multi` skill launches **real external AI CLIs** for genuine di
 
 - **Checkpoints** — Pause for review at each step
 - **Consensus Tagging** — Items flagged by 2+ models get priority
-- **Solutions Library** — First debug (30 min) → future lookup (seconds)
+- **Solutions Library** — First debug (30 min) -> future lookup (seconds)
 - **Parallel Execution** — Independent domains in separate terminals
 
 ---
@@ -134,38 +146,51 @@ The `/spec-review-multi` skill launches **real external AI CLIs** for genuine di
 
 ```
 claude-setup/
-├── reference/              # Protocol files (source of truth for skills)
-│   ├── protocol-*.md       #   7 skill definitions
-│   ├── guide-*.md          #   Setup, session, parallel build guides
-│   ├── research-*.md       #   Workflow analysis and feedback
-│   └── source-*.md         #   Curated external references
-├── scripts/                # Multi-model orchestrator
+├── .claude-plugin/            # Plugin manifest for marketplace install
+│   ├── plugin.json            #   Plugin metadata
+│   └── marketplace.json       #   Marketplace distribution
+├── skills/                    # Modern skill definitions
+│   ├── plan-master/SKILL.md
+│   ├── spec-review-multi/SKILL.md
+│   ├── roadmap-with-validation/SKILL.md
+│   ├── session-start/SKILL.md
+│   ├── session-end/SKILL.md
+│   ├── checkpoint/SKILL.md
+│   └── compound/SKILL.md
+├── reference/                 # Protocol documentation (source of truth)
+│   ├── protocol-*.md          #   7 protocol definitions
+│   ├── guide-*.md             #   Setup, session, parallel build guides
+│   ├── research-*.md          #   Workflow analysis and feedback
+│   └── source-*.md            #   Curated external references
+├── scripts/                   # Multi-model orchestrator
 │   ├── multi-model-review.sh
 │   ├── lib/cli-wrappers.sh
-│   └── templates/          #   Prompt templates per model
-├── docs/                   # Human-readable guides
+│   └── templates/             #   Prompt templates per model
+├── docs/                      # Human-readable guides
 │   ├── PHILOSOPHY.md
 │   ├── SKILLS.md
 │   └── MULTI-MODEL-SETUP.md
-├── templates/              # Starter files for new projects
-│   ├── ROADMAP.md          #   Roadmap template
-│   └── features.json       #   Feature tracking template
-├── solutions/              # Solutions library structure
-├── archive/                # Design docs and original workflow steps
-│   ├── design-docs/        #   Research and planning documents
-│   └── workflow-steps/     #   Step-by-step protocol originals
-├── install.sh              # One-command installer
-├── CLAUDE.md               # Project instructions for Claude Code
-└── LICENSE                 # MIT
+├── templates/                 # Starter files for new projects
+│   ├── ROADMAP.md             #   Roadmap template
+│   └── features.json          #   Feature tracking template
+├── solutions/                 # Solutions library structure
+├── archive/                   # Design docs and original workflow steps
+├── install.sh                 # Legacy installer (fallback)
+├── CLAUDE.md                  # Project instructions for Claude Code
+└── LICENSE                    # MIT
 ```
 
-### What Gets Installed
+### Plugin Installation
+
+When installed via `/plugin marketplace add`, Claude Code reads skills directly from `skills/*/SKILL.md`. No files are copied.
+
+### Legacy Installation
 
 Running `./install.sh` copies into `~/.claude/`:
 
 ```
 ~/.claude/
-├── commands/         # 7 skills (from reference/protocol-*.md)
+├── commands/         # 7 skills (from skills/*/SKILL.md)
 ├── scripts/          # Multi-model orchestrator + templates
 ├── reference/        # All protocol and guide docs
 ├── reviews/          # Output directory for review results
@@ -178,9 +203,9 @@ Running `./install.sh` copies into `~/.claude/`:
 
 These skills are designed as a foundation. You can:
 
-- **Edit protocols** — Modify `reference/protocol-*.md` files and re-run `install.sh`
-- **Add your own skills** — Create new `.md` files in `~/.claude/commands/`
-- **Build a private config** — Keep a separate `~/.claude/` git repo for personal tools (machine sync, domain commands, custom agents) and use this repo's installer to layer skills on top
+- **Edit skills** — Modify `skills/*/SKILL.md` files directly
+- **Add your own skills** — Create new `skills/<name>/SKILL.md` directories
+- **Build a private config** — Keep a separate `~/.claude/` git repo for personal tools and use this repo's installer to layer skills on top
 - **Fork and customize** — Clone, remove what you don't need, add your own protocols
 
 ---

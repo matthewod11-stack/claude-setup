@@ -1,0 +1,15 @@
+{
+  "name": "claude-setup",
+  "owner": {
+    "name": "matthewod11-stack"
+  },
+  "plugins": [
+    {
+      "name": "claude-setup",
+      "source": "./",
+      "description": "Workflow skills for Claude Code: planning wizards, multi-model review, session management, and knowledge capture",
+      "version": "1.0.0",
+      "keywords": ["workflow", "planning", "multi-model", "review", "session"]
+    }
+  ]
+}

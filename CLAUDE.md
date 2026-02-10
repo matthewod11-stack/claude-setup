@@ -2,17 +2,35 @@
 
 Source repo for Claude Code workflow skills with real multi-model review.
 
+## Installation
+
+### Plugin (Recommended)
+
+```
+/plugin marketplace add matthewod11-stack/claude-setup
+```
+
+### Legacy (install.sh)
+
+```bash
+git clone https://github.com/matthewod11-stack/claude-setup.git
+cd claude-setup
+./install.sh
+```
+
+Copies skills from `skills/` to `~/.claude/commands/`.
+
 ## This Repo
 
+- `skills/` — Modern SKILL.md files with YAML frontmatter (plugin format)
+- `.claude-plugin/` — Plugin manifest and marketplace metadata
 - `reference/` — Protocol documentation (source of truth)
 - `scripts/` — Multi-model orchestrator and CLI wrappers
 - `docs/` — Human-readable guides
 - `solutions/` — Template structure for learnings
-- `install.sh` — One-command installer
+- `install.sh` — Legacy installer (copies skills to ~/.claude/commands/)
 
-## Skills (installed globally)
-
-Run `./install.sh` to install to `~/.claude/`:
+## Skills
 
 | Command | Purpose |
 |---------|---------|

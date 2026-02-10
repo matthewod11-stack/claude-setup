@@ -1,0 +1,11 @@
+{
+  "name": "claude-setup",
+  "version": "1.0.0",
+  "description": "Workflow skills for Claude Code: planning wizards, multi-model review, session management, and knowledge capture",
+  "author": {
+    "name": "matthewod11-stack"
+  },
+  "repository": "https://github.com/matthewod11-stack/claude-setup",
+  "license": "MIT",
+  "keywords": ["workflow", "planning", "multi-model", "review", "session", "skills"]
+}
