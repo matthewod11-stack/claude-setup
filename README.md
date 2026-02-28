@@ -4,9 +4,7 @@ A skill system for Claude Code that adds structured planning, real multi-model s
 
 > "Give Claude a way to verify its work." — Boris Cherny
 
-<!-- Uncomment when screenshot is added:
 ![Claude Code Workflow](docs/screenshots/workflow.png)
--->
 
 This is the **public, shareable** skill system. It installs into your existing Claude Code setup alongside any personal configuration you already have.
 
